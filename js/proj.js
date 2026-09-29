@@ -484,4 +484,5 @@
     stepper: () => stp,
   };
   GE.register('proj', mod);
+  GE.pileMesh = voxels;
 })();

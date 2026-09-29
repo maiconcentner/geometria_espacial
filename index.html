@@ -32,6 +32,8 @@
       <button class="tab" role="tab" id="tab-rev" data-view="rev" aria-selected="false">Revolução</button>
       <button class="tab" role="tab" id="tab-net" data-view="net" aria-selected="false">Planificação</button>
       <button class="tab" role="tab" id="tab-proj" data-view="proj" aria-selected="false">Projeções e vistas</button>
+      <button class="tab" role="tab" id="tab-game" data-view="game" aria-selected="false">Desafios</button>
+      <button class="tab" role="tab" id="tab-box" data-view="box" aria-selected="false">Minha caixa</button>
     </nav>
 
     <div class="tools">
@@ -348,6 +350,128 @@
     </aside>
   </main>
 
+
+  <!-- ============ DESAFIOS ============ -->
+  <main class="view" id="view-game" aria-labelledby="tab-game" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Escolher o desafio">
+          <div class="fb-group">
+            <div class="seg seg-sm" id="game-g" role="group" aria-label="Desafio">
+              <button data-v="ex">Exercícios</button><button data-v="vista">Qual é a vista?</button><button data-v="rev">Que sólido gira?</button>
+            </div>
+            <div class="seg seg-sm" id="game-lvl" role="group" aria-label="Nível">
+              <button data-v="1">Nível 1</button><button data-v="2">Nível 2</button><button data-v="3">Nível 3</button>
+            </div>
+          </div>
+          <div class="fb-group">
+            <button class="fb fb-go" id="game-new" title="Sortear uma nova rodada (tecla N)"><span>Nova rodada</span></button>
+            <span id="game-exbtns" class="fb-group">
+              <button class="fb" id="game-copy" title="Copiar o enunciado"><span>Copiar enunciado</span></button>
+              <button class="fb" id="game-open" title="Abrir a mesma situação na aba correspondente"><span>Abrir na aba</span></button>
+            </span>
+          </div>
+        </div>
+        <p class="game-q" id="game-q"></p>
+        <div class="figbar sub" role="toolbar" aria-label="Figura">
+          <div class="fb-group viewbar" id="game-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="game-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Figura do desafio"></svg>
+        <div class="game-opts" id="game-opts"></div>
+        <div id="game-stepper">
+        <div class="stepper">
+          <button class="step-btn" id="game-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="game-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="game-replay" aria-label="Rever o movimento" title="Rever o movimento (tecla R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="game-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="game-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+          <div class="exteams" id="game-exteams"></div>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div id="game-stepcard">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="game-count"></p>
+        <h2 id="game-title"></h2>
+        <div class="step-body" id="game-body"></div>
+      </div>
+      </div>
+      <div class="card">
+        <h2>Placar</h2>
+        <ol class="teams" id="game-teams"></ol>
+        <div class="edit-row">
+          <button class="btn btn-ghost" id="game-team-add">+ Equipe</button>
+          <button class="btn btn-ghost" id="game-team-del">− Equipe</button>
+          <button class="btn btn-ghost" id="game-team-zero">Zerar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Cronômetro</h2>
+        <div class="clock" id="game-clock">1:00</div>
+        <div class="seg seg-sm seg-wrap" id="game-clock-len" role="group" aria-label="Duração">
+          <button data-v="30">30 s</button><button data-v="60">1 min</button><button data-v="90">1 min 30</button><button data-v="120">2 min</button><button data-v="180">3 min</button>
+        </div>
+        <div class="edit-row">
+          <button class="btn" id="game-clock-go">Iniciar</button>
+          <button class="btn btn-ghost" id="game-clock-reset">Zerar</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+
+  <!-- ============ MINHA CAIXA ============ -->
+  <main class="view" id="view-box" aria-labelledby="tab-box" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <p class="print-head" id="box-print-head"></p>
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title">O que sei agora: projetar uma caixa</h2>
+          <div class="fb-group viewbar" id="box-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="box-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A caixa em perspectiva e as vistas ortográficas com as medidas"></svg>
+        <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
+        <div class="kpis" id="box-kpis"></div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card">
+        <h2>Projeto</h2>
+        <div class="field"><label for="box-model">Começar de um modelo</label><select id="box-model" class="select"></select></div>
+        <div class="two">
+          <div class="field"><label for="box-prod">Produto</label><input type="text" id="box-prod"></div>
+          <div class="field"><label for="box-team">Dupla</label><input type="text" id="box-team" placeholder="nomes"></div>
+        </div>
+        <div class="solid-grid" id="box-solids"></div>
+        <div class="dims" id="box-dims"></div>
+        <div class="field-inline">
+          <span class="flabel">Unidade</span>
+          <div class="seg seg-sm" id="box-unit"><button data-v="cm">cm</button><button data-v="dm">dm</button><button data-v="m">m</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Próximos passos</h2>
+        <div class="stack">
+          <button class="btn btn-ghost" id="box-to-vol">Ver o volume passo a passo</button>
+          <button class="btn btn-ghost" id="box-to-net">Ver a planificação e a área</button>
+          <button class="btn" id="box-print">Imprimir a ficha técnica</button>
+        </div>
+        <p class="note">Em duplas: escolham prisma ou cilindro, desenhem as vistas com as medidas, calculem o volume e a capacidade. Depois, montem um modelo de papelão ou cartolina.</p>
+      </div>
+    </aside>
+  </main>
+
   <!-- ============ PAINEL DO PROFESSOR ============ -->
   <div class="scrim" id="scrim" hidden></div>
   <aside class="panel" id="panel" aria-label="Painel do professor" hidden>
@@ -418,6 +542,7 @@
           <dt><kbd>Home</kbd></dt><dd>volta ao primeiro passo</dd>
           <dt><kbd>R</kbd></dt><dd>rever o movimento do passo</dd>
           <dt><kbd>1</kbd> … <kbd>7</kbd></dt><dd>trocar de aba</dd>
+          <dt><kbd>N</kbd></dt><dd>nova rodada (Desafios)</dd>
           <dt>arrastar</dt><dd>girar a figura (botão direito ou Shift + arrastar: mover)</dd>
           <dt>roda do mouse</dt><dd>aproximar ou afastar (no celular: pinça)</dd>
           <dt><kbd>0</kbd></dt><dd>vista padrão da figura</dd>
@@ -491,6 +616,8 @@
 <script src="js/net.js"></script>
 <script src="js/cap.js"></script>
 <script src="js/proj.js"></script>
+<script src="js/game.js"></script>
+<script src="js/box.js"></script>
 <script src="js/vendor/qrcode.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/share.js"></script>

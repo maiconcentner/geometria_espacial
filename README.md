@@ -75,11 +75,34 @@ O sólido **abre um movimento por clique**, como uma caixa de papelão: as faces
   - **Dado (Atividade 15)**: frontal 5, lateral esquerda 4, inferior 6; antes da lateral direita, da superior e da posterior aparece um **?** para a turma responder (faces opostas somam 7).
   - **Chaveta meia-lua (Atividade 14)**, casinha, cilindro, cone, prisma triangular e **pilha de cubos** montada tocando numa grade 4 × 4 (ou sorteada). Três ou seis vistas.
 
+## Desafios (Fase 4)
+
+Placar por **equipes** (2 a 4, nomes editáveis, ± pontos, ★ para quem lidera) e **cronômetro** (30 s a 3 min, com aviso sonoro). Tecla `N`: nova rodada.
+
+- **Exercícios** em três níveis, com números novos a cada rodada e figura 3D (que gira) com o **?** na medida pedida:
+  - nível 1: volume do paralelepípedo e do cubo, capacidade em litros, unidades de capacidade;
+  - nível 2: prisma triangular, cilindro (às vezes com o diâmetro), descobrir a altura, papelão de uma caixa, cisterna (quantos dias);
+  - nível 3: prisma hexagonal (com Pitágoras), descobrir a aresta (raiz quadrada), pintura de silo, reservatório em galões ou botijões.
+  - Resolução **um passo por clique**: dados → fórmula → substituir → calcular → resposta (a figura mostra o valor encontrado). **Copiar enunciado** e **Abrir na aba** (a mesma situação no Volume, na Planificação ou na Capacidade).
+- **Qual é a vista?**: uma pilha de cubos sorteada e quatro figuras; qual é a vista frontal, superior ou lateral pedida? Ao acertar, a câmera gira até aquela vista.
+- **Que sólido gira?**: dada a bandeirinha, que sólido ela forma; ou dado o sólido, qual bandeirinha o forma.
+
+## Minha caixa (Fase 4: O que sei agora)
+
+Em duplas, projetar uma caixa em forma de **prisma** (cubo, base quadrada, paralelepípedo, triangular, hexagonal) ou **cilindro**, com medidas reais (ou partir de um modelo: caixa de sapatos, caixa de leite, lata de refrigerante, caixa de pizza, presente hexagonal, chocolate triangular, caixa-d’água).
+
+- A caixa em 3D (gira com o mouse) e as **vistas frontal, superior e lateral esquerda com as cotas**, na disposição do 1º diedro.
+- **Volume**, **capacidade** (comparada com caixas de leite de 1 L ou latas de 350 mL) e **material** (área da superfície).
+- **Ver o volume passo a passo** e **Ver a planificação** abrem a mesma caixa nas outras abas; **Imprimir a ficha técnica** imprime só a caixa, as vistas e os números.
+
 ## Ferramentas de aula
 
 - **Copiar imagem** (tecla `C`): a figura como PNG, fundo branco, pronta para listas.
 - **Anotar** (tecla `A`): caneta, marca-texto, laser, desfazer.
 - **Painel do professor** (tecla `P`): valor de π, casas decimais, tema, tamanho do texto, velocidade, **link compartilhável** (leva a aba e o passo), **QR code** e **cenários salvos**.
+- Atalhos: `→`/`Espaço`/`PageDown` avança (passador de slides), `←` volta, `Home` primeiro passo, `R` rever o movimento, `1`…`7` abas, `0` vista padrão, `+`/`−` aproximar/afastar, `G` girar sozinho, `H` arestas ocultas, `C` copiar imagem, `A` anotar, `F` tela cheia, `P` painel.
+
+As quatro fases do plano estão concluídas.
 
 ## Como publicar (GitHub Pages, gratuito)
 
@@ -102,6 +125,8 @@ js/rev.js           aba Revolução (bandeirinhas)
 js/net.js           aba Planificação (área da superfície)
 js/cap.js           aba Capacidade (litro, escada, latas, cisternas)
 js/proj.js          aba Projeções e vistas
+js/game.js          aba Desafios (exercícios, jogos, placar e cronômetro)
+js/box.js           aba Minha caixa (O que sei agora)
 js/annotate.js      caneta, marca-texto e laser por cima da figura
 js/export.js        copiar a figura como imagem PNG
 js/share.js         link, cenários salvos e QR code

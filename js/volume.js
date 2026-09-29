@@ -330,9 +330,10 @@
   const COL = { solid: '#f2a15f', base: '#5aa7e8', layer: '#79b8f0', glass: '#d7e7f2', water: '#3d8fd6', ghost: '#8a98a6' };
   let view = null;   // controle da vista (girar, mover, aproximar)
 
-  function draw(s) {
-    const o = S();
-    const svg = $('vol-svg');
+  function draw(s) { drawTo($('vol-svg'), S(), s, view); }
+  /* Desenha o sólido de qualquer configuração (usado também pelos Desafios e por Minha caixa). */
+  function drawTo(svg, o, s, view, opt) {
+    opt = opt || {};
     const d = dims(o);
     const def = SOLIDS[o.solid];
     const H = d.h;
@@ -344,9 +345,9 @@
     const T = lying ? (p) => [p[1] - H / 2, d.r - p[0], p[2]] : (p) => p;
     const full = G.xform(G.prism(base, H, [sh, 0], { smooth: def.base === 'circ' }), T);
     const R = Math.sqrt(rb * rb + (H / 2) * (H / 2)) + shMax / 2;
-    const scale = (170 / R) * GE.lerp(1, 0.78, s.inset);
-    const cx = GE.lerp(500, 300, s.inset);
-    const cam = G.cam(view.apply({ s: scale, cx, cy: 275, center: T([sh / 2, H / 2, 0]) }));
+    const scale = ((opt.size || 170) / R) * GE.lerp(1, 0.78, s.inset);
+    const cx = GE.lerp(opt.cx || 500, 300, s.inset);
+    const cam = G.cam(view.apply({ s: scale, cx, cy: opt.cy || 275, center: T([sh / 2, H / 2, 0]) }));
     let out = '';
     const hid = GE.state.hidden;
     const hp = Math.max(1e-6, s.fill * H);
@@ -414,7 +415,7 @@
   function labTxt(k, v, o, s) {
     const hide = (o.ask === 'h' && k === 'h') || (o.ask === 'a' && (k === 'a' || k === 'r'));
     if (hide && s.ans < 0.5) return '<tspan class="unk">' + k + ' = ?</tspan>';
-    return (hide ? '<tspan class="found">' : '<tspan>') + k + ' = ' + F(v) + ' ' + U() + '</tspan>';
+    return (hide ? '<tspan class="found">' : '<tspan>') + k + ' = ' + F(v) + ' ' + o.unit + '</tspan>';
   }
 
   function labels(o, d, base, H, sh, T, cam, s) {
@@ -456,11 +457,11 @@
       const ez = edgeBest([[bot(1), bot(2)], [bot(0), bot(3)]]);
       if (o.solid === 'cubo') {
         out += lab(ex[0], ex[1], labTxt('a', d.a, o, s));
-        out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + U());
-        out += lab(bot(vi), top(vi), s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + U());
+        out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit);
+        out += lab(bot(vi), top(vi), s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit);
         return out;
       }
-      if (b === 'sq') { out += lab(ex[0], ex[1], labTxt('a', d.a, o, s)); out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + U()); }
+      if (b === 'sq') { out += lab(ex[0], ex[1], labTxt('a', d.a, o, s)); out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit); }
       else { out += lab(ex[0], ex[1], labTxt('c', d.c, o, s)); out += lab(ez[0], ez[1], labTxt('L', d.L, o, s)); }
     } else if (b === 'tri') {
       out += lab(bot(0), bot(1), labTxt('b', d.b, o, s));
@@ -522,7 +523,7 @@
     const cx = X0 + W / 2, cy = Y0 + 220;
     let out = '<rect class="inset-bg" x="' + X0 + '" y="' + Y0 + '" width="' + W + '" height="' + Hh + '" rx="14"/>';
     out += '<text class="inset-title" x="' + (X0 + 18) + '" y="' + (Y0 + 30) + '">Área da base</text>';
-    const u = U();
+    const u = o.unit;
     const A = areaOf(o, d);
     const An = val(A);
     const t1 = GE.seg(s.ia, 0, 1), t2 = GE.seg(s.ia, 1, 2);
@@ -769,5 +770,5 @@
     redraw() { if (stp) stp.redraw(); },
   };
   GE.register('vol', mod);
-  GE.geom = { dims, basePoly, areaOf, volOf, val, symTxt, tail, dimName, baseRadius };
+  GE.geom = { dims, basePoly, areaOf, volOf, val, symTxt, tail, dimName, baseRadius, drawTo, sc: (p) => Object.assign({}, B, p), SOLIDS };
 })();
