@@ -552,3 +552,66 @@ canvas.annot {
 .circ-hi { stroke: var(--out); stroke-width: 5; stroke-linecap: round; opacity: 0.85; }
 .stage .face-lab { font-family: var(--font-math); font-size: 18px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
 .stage .it { font-style: italic; }
+
+/* ===== Capacidade ===== */
+.seg-wrap { display: flex; flex-wrap: wrap; }
+.seg-wrap button { flex: 1 1 auto; }
+.sub-card { margin-top: 12px; }
+.conv-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px; align-items: center; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stage.flat { cursor: default; }
+.stage .bigcount { font-family: var(--font-display); font-size: 64px; font-weight: 700; fill: var(--out); }
+.stage .bigcount-sub { font-size: 20px; font-weight: 700; fill: var(--muted); }
+.stage .tag3 { font-size: 17px; font-weight: 700; text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.stage .tag3.hi { fill: var(--accent); }
+.stage .tag3.val { fill: var(--water); font-family: var(--font-math); font-size: 19px; }
+.stage .tag3.bad { fill: var(--bad); }
+.stage .tag3.ok { fill: var(--ok); }
+.stage .dim3.small { font-size: 16px; }
+.edge.hi { stroke: var(--accent); stroke-width: 2.8; }
+.folga { fill: none; stroke: var(--bad); stroke-width: 2; stroke-dasharray: 6 4; }
+.day { fill: var(--water); }
+.person circle, .person path { fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-linecap: round; }
+.stair { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+.stair.cur { fill: color-mix(in srgb, var(--accent) 14%, var(--surface)); stroke: var(--accent); stroke-width: 2.5; }
+.stage .stair-u { font-family: var(--font-display); font-size: 26px; font-weight: 700; fill: var(--ink); }
+.stage .stair-u.cur { fill: var(--accent); }
+.stage .stair-n { font-size: 13px; fill: var(--muted); }
+.stage .stair-op { font-size: 15px; font-weight: 700; fill: var(--ok); }
+.stage .stair-eq { font-family: var(--font-math); font-size: 20px; font-weight: 600; fill: var(--water); }
+.marker rect { fill: var(--out); }
+.stage .marker text { fill: #fff; font-family: var(--font-math); font-size: 21px; font-weight: 600; }
+.stage .stair-op.inv { fill: var(--bad); }
+.opchip rect { fill: var(--surface); stroke: var(--line); }
+
+/* ===== Projeções e vistas ===== */
+.plane { stroke: color-mix(in srgb, var(--ink) 35%, transparent); stroke-width: 1.2; }
+.plane-a { fill: var(--plane-a); }
+.plane-b { fill: var(--plane-b); }
+.plane-c { fill: var(--plane-c); }
+.stage .plane-lab { font-family: var(--font-math); font-style: italic; font-size: 24px; font-weight: 600; fill: var(--ink); }
+.projline { stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 4 4; }
+.projshape { fill: color-mix(in srgb, var(--bad) 30%, transparent); stroke: var(--bad); stroke-width: 2.4; stroke-linejoin: round; }
+.projseg { stroke: var(--bad); stroke-width: 4; stroke-linecap: round; }
+.segAB { stroke: var(--in); stroke-width: 4; stroke-linecap: round; }
+.pt3.proj { fill: var(--bad); }
+.stage .plab { font-family: var(--font-math); font-size: 22px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.stage .plab.proj { fill: var(--bad); }
+.rmark { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.disk { fill: color-mix(in srgb, var(--in) 30%, transparent); stroke: var(--in); stroke-width: 2.5; }
+.diam { stroke: var(--in); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.stage .readout { font-family: var(--font-display); font-size: 26px; font-weight: 700; fill: var(--in); }
+.stage .readout.proj { fill: var(--bad); }
+.stage .readout.small { font-size: 18px; fill: var(--muted); }
+.ovl { text-decoration: overline; font-family: var(--font-math); font-style: italic; }
+.stage .slot-lab { font-size: 15px; font-weight: 700; fill: var(--muted); }
+.slot-empty { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.stage .slot-q { font-family: var(--font-display); font-size: 54px; font-weight: 700; fill: var(--accent); }
+.pilebox { margin-top: 10px; }
+.pile { display: grid; grid-template-columns: repeat(4, 44px); gap: 4px; justify-content: center; margin: 8px 0; }
+.pcell { width: 44px; height: 44px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface-2); font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+.pcell.h1 { background: color-mix(in srgb, var(--out) 25%, var(--surface)); }
+.pcell.h2 { background: color-mix(in srgb, var(--out) 45%, var(--surface)); }
+.pcell.h3 { background: color-mix(in srgb, var(--out) 65%, var(--surface)); }
+.pcell.h4 { background: var(--out); color: #fff; }
+.edit-row { display: flex; gap: 8px; justify-content: space-between; margin-top: 6px; flex-wrap: wrap; }

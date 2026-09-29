@@ -28,8 +28,10 @@
 
     <nav class="tabs" role="tablist" aria-label="Módulos">
       <button class="tab" role="tab" id="tab-vol" data-view="vol" aria-selected="true">Volume</button>
+      <button class="tab" role="tab" id="tab-cap" data-view="cap" aria-selected="false">Capacidade</button>
       <button class="tab" role="tab" id="tab-rev" data-view="rev" aria-selected="false">Revolução</button>
       <button class="tab" role="tab" id="tab-net" data-view="net" aria-selected="false">Planificação</button>
+      <button class="tab" role="tab" id="tab-proj" data-view="proj" aria-selected="false">Projeções e vistas</button>
     </nav>
 
     <div class="tools">
@@ -217,6 +219,135 @@
     </aside>
   </main>
 
+
+  <!-- ============ CAPACIDADE ============ -->
+  <main class="view" id="view-cap" aria-labelledby="tab-cap" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title" id="cap-name"></h2>
+          <div class="fb-group viewbar" id="cap-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="cap-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Volume e capacidade"></svg>
+        <div class="stepper">
+          <button class="step-btn" id="cap-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="cap-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="cap-replay" aria-label="Rever o movimento" title="Rever o movimento (tecla R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="cap-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="cap-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="cap-count"></p>
+        <h2 id="cap-title"></h2>
+        <div class="step-body" id="cap-body"></div>
+      </div>
+      <div class="card">
+        <h2>Volume e capacidade</h2>
+        <div class="seg seg-sm seg-wrap" id="cap-mode" role="group" aria-label="Assunto">
+          <button data-v="litro">1 L = 1 dm³</button><button data-v="escada">Escada</button><button data-v="latas">Latas</button><button data-v="cist">Cisternas</button>
+        </div>
+        <div id="cap-esc" class="sub-card">
+          <div class="field"><label for="cap-val">Valor</label><input type="text" id="cap-val" inputmode="decimal"></div>
+          <div class="conv-row">
+            <select id="cap-from" class="select" aria-label="De"></select>
+            <button class="icon-btn" id="cap-swap" title="Trocar" aria-label="Trocar as unidades"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14m-4-4 4 4-4 4M20 16H6m4-4-4 4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <select id="cap-to" class="select" aria-label="Para"></select>
+          </div>
+        </div>
+        <div id="cap-lat" class="sub-card">
+          <div class="two">
+            <div class="field"><label for="cap-need">Suco (mL)</label><input type="text" id="cap-need" inputmode="decimal"></div>
+            <div class="field"><label for="cap-folga">Folga (%)</label><input type="text" id="cap-folga" inputmode="decimal"></div>
+          </div>
+        </div>
+        <div id="cap-cis" class="sub-card">
+          <div class="two">
+            <div class="field"><label for="cap-people">Pessoas na casa</label><input type="text" id="cap-people" inputmode="numeric"></div>
+            <div class="field"><label for="cap-perday">Litros por pessoa/dia</label><input type="text" id="cap-perday" inputmode="decimal"></div>
+          </div>
+        </div>
+        <p class="note">1 cm³ = 1 mL · 1 dm³ = 1 L · 1 m³ = 1 000 L</p>
+      </div>
+    </aside>
+  </main>
+
+
+  <!-- ============ PROJEÇÕES E VISTAS ============ -->
+  <main class="view" id="view-proj" aria-labelledby="tab-proj" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title" id="proj-name"></h2>
+          <div class="fb-group viewbar" id="proj-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="proj-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Projeções ortogonais e vistas ortográficas"></svg>
+        <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
+        <div class="stepper">
+          <button class="step-btn" id="proj-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="proj-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="proj-replay" aria-label="Rever o movimento" title="Rever o movimento (tecla R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="proj-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="proj-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="proj-count"></p>
+        <h2 id="proj-title"></h2>
+        <div class="step-body" id="proj-body"></div>
+      </div>
+      <div class="card">
+        <h2>Projeções e vistas</h2>
+        <div class="seg seg-sm seg-wrap" id="proj-mode" role="group" aria-label="Assunto">
+          <button data-v="seg">Segmento</button><button data-v="circ">Círculo</button><button data-v="planos">Sólidos nos planos</button><button data-v="vistas">Vistas</button>
+        </div>
+        <div id="proj-seg" class="sub-card">
+          <label class="flabel" for="proj-ang">Inclinação do segmento <span id="proj-ang-v" class="muted"></span></label>
+          <input type="range" id="proj-ang" min="0" max="90" step="1">
+        </div>
+        <div id="proj-circ" class="sub-card">
+          <label class="flabel" for="proj-cang">Inclinação do círculo <span id="proj-cang-v" class="muted"></span></label>
+          <input type="range" id="proj-cang" min="0" max="90" step="1">
+        </div>
+        <div id="proj-planos" class="sub-card">
+          <div class="questions" id="proj-psol"></div>
+          <div class="chips"><button class="chip" id="proj-gamma" title="Um terceiro plano, à esquerda">Plano γ</button></div>
+        </div>
+        <div id="proj-vistas" class="sub-card">
+          <div class="questions" id="proj-objs"></div>
+          <div class="chips"><button class="chip" id="proj-six" title="Mostrar as seis vistas (ou só frontal, superior e lateral)">6 vistas</button></div>
+          <div id="proj-pilebox" class="pilebox">
+            <p class="note">Toque num quadrado para empilhar cubos (0 a 4). A grade é a vista de cima; a frente fica embaixo.</p>
+            <div class="pile" id="proj-pile"></div>
+            <div class="edit-row"><button class="btn btn-ghost" id="proj-pile-clear">Limpar</button><button class="btn btn-ghost" id="proj-pile-rand">Sortear</button></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
   <!-- ============ PAINEL DO PROFESSOR ============ -->
   <div class="scrim" id="scrim" hidden></div>
   <aside class="panel" id="panel" aria-label="Painel do professor" hidden>
@@ -358,6 +489,8 @@
 <script src="js/volume.js"></script>
 <script src="js/rev.js"></script>
 <script src="js/net.js"></script>
+<script src="js/cap.js"></script>
+<script src="js/proj.js"></script>
 <script src="js/vendor/qrcode.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/share.js"></script>

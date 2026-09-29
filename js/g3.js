@@ -267,7 +267,8 @@
     });
     let edges = '', hid = '';
     if (o.edges !== false) {
-      const frontF = NV.map((n) => n[2] > 1e-6);
+      // faces de perfil contam como visíveis (o contorno não vira tracejado)
+      const frontF = NV.map((n) => n[2] > -1e-6);
       const vis = [], hidden = [];
       m.E.forEach((e) => {
         const fr = e.f.map((fi) => frontF[fi]);
@@ -383,6 +384,12 @@
       }, () => { tw = null; });
     };
     v.reset = () => v.goTo({ yaw: cam0.yaw, pitch: cam0.pitch, zoom: 1, px: 0, py: 0 });
+    /* Troca a vista padrão (e vai para ela sem animação). */
+    v.home = function (c) {
+      stopSpin();
+      Object.assign(cam0, c);
+      Object.assign(v.c, { yaw: cam0.yaw, pitch: cam0.pitch, zoom: 1, px: 0, py: 0 });
+    };
     v.zoomBy = function (f, mx, my) {
       const z0 = v.c.zoom;
       const z1 = GE.clamp(z0 * f, 0.4, 4);
@@ -508,6 +515,39 @@
       const e = GE.ease(t);
       onFrame({ yaw: from.yaw + dy * e, pitch: from.pitch + (to.pitch - from.pitch) * e });
     }, onDone);
+  };
+
+  /* Caixa alinhada aos eixos a partir do canto (x0, y0, z0), com medidas sx, sy, sz. */
+  G.box = function (x0, y0, z0, sx, sy, sz) {
+    const m = G.prism([[0, 0], [sx, 0], [sx, sz], [0, sz]], sy);
+    return G.xform(m, (p) => [p[0] + x0, p[1] + y0, p[2] + z0]);
+  };
+  /* Linhas de grade (passo g) nas faces visíveis de uma caixa alinhada aos eixos. */
+  G.boxGrid = function (cam, x0, y0, z0, sx, sy, sz, g) {
+    g = g || 1;
+    let d = '';
+    const P = (x, y, z) => { const q = cam.p([x, y, z]); return G.f1(q[0]) + ' ' + G.f1(q[1]); };
+    const seg = (a, b) => { d += 'M' + P(a[0], a[1], a[2]) + 'L' + P(b[0], b[1], b[2]); };
+    const vis = (n) => cam.dir(n)[2] > 1e-6;
+    const X1 = x0 + sx, Y1 = y0 + sy, Z1 = z0 + sz;
+    const steps = (a, len) => { const out = []; for (let t = g; t < len - 1e-6; t += g) out.push(a + t); return out; };
+    const faces = [
+      [[0, 1, 0], Y1, 'y'], [[0, -1, 0], y0, 'y'], [[1, 0, 0], X1, 'x'], [[-1, 0, 0], x0, 'x'], [[0, 0, 1], Z1, 'z'], [[0, 0, -1], z0, 'z'],
+    ];
+    faces.forEach(([n, c, ax]) => {
+      if (!vis(n)) return;
+      if (ax === 'y') {
+        steps(x0, sx).forEach((x) => seg([x, c, z0], [x, c, Z1]));
+        steps(z0, sz).forEach((z) => seg([x0, c, z], [X1, c, z]));
+      } else if (ax === 'x') {
+        steps(y0, sy).forEach((y) => seg([c, y, z0], [c, y, Z1]));
+        steps(z0, sz).forEach((z) => seg([c, y0, z], [c, Y1, z]));
+      } else {
+        steps(x0, sx).forEach((x) => seg([x, y0, c], [x, Y1, c]));
+        steps(y0, sy).forEach((y) => seg([x0, y, c], [X1, y, c]));
+      }
+    });
+    return d ? '<path class="grid3" d="' + d + '"/>' : '';
   };
 
   /* Passo "bonito" para grades: 1, 2, 5, 10... com no máximo maxN divisões. */

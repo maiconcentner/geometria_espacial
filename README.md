@@ -59,6 +59,22 @@ O sólido **abre um movimento por clique**, como uma caixa de papelão: as faces
 - **Atividade 11 (silo)**: só a tampa e a parede são pintadas (o piso fica cinza); *C* = 4π m, parede 80π m², tampa 4π m², total 252 m² com π = 3 e **42 litros** de tinta.
 - Também: caixa de papelão e lata de alumínio. No último passo, o sólido **se monta de novo**.
 
+## Capacidade (Fase 3)
+
+- **1 L = 1 dm³**: o cubinho de 1 cm³ (1 mL) vira fileira (10), placa (100) e o cubo de 1 dm (1 000 cm³), que **enche de água**: 1 L. Depois, o cubo de 1 m com 1 000 litros.
+- **Escada de unidades** kL, hL, daL, L, dL, cL, mL: o valor desce (×10) ou sobe (÷10) **um degrau por clique**, com m³, dm³ e cm³ embaixo de kL, L e mL.
+- **Latas (Atividade 9)**: volume de cada lata (diâmetro → raio), capacidade em mL; 350 mL de suco em cada uma (as pequenas **transbordam**), a linha dos 10% de folga e a lata mais apropriada (392,5 mL). Suco e folga editáveis.
+- **Cisternas (Atividade 10)**: volume, capacidade em litros, consumo da família (5 pessoas × 154 L) e **quantos dias** de água cada uma garante, com uma pessoa de 1,70 m para comparar. Pessoas e consumo editáveis.
+
+## Projeções e vistas (Fase 3)
+
+- **Segmento**: A e B descem perpendiculares ao plano α (A′, B′, com o ângulo reto); o segmento perpendicular vira um **ponto**, o paralelo mantém o comprimento. Controle de inclinação livre.
+- **Círculo (Atividade 12)**: paralelo → círculo igual; inclinado → **elipse**; perpendicular → **segmento** do tamanho do diâmetro.
+- **Sólidos nos planos (Atividade 13)**: cilindro e paralelepípedo (e cone, prisma, chaveta) entre os planos α e β (e γ, opcional); as linhas de projeção descem e a projeção aparece em cada plano. Os planos que ficam na frente ao girar a figura ficam transparentes.
+- **Vistas ortográficas**: a câmera vai até cada lado e a vista aparece no quadro ao lado (arestas escondidas tracejadas, como no desenho técnico).
+  - **Dado (Atividade 15)**: frontal 5, lateral esquerda 4, inferior 6; antes da lateral direita, da superior e da posterior aparece um **?** para a turma responder (faces opostas somam 7).
+  - **Chaveta meia-lua (Atividade 14)**, casinha, cilindro, cone, prisma triangular e **pilha de cubos** montada tocando numa grade 4 × 4 (ou sorteada). Três ou seis vistas.
+
 ## Ferramentas de aula
 
 - **Copiar imagem** (tecla `C`): a figura como PNG, fundo branco, pronta para listas.
@@ -84,6 +100,8 @@ js/icons.js         desenhos dos sólidos nos botões
 js/volume.js        aba Volume
 js/rev.js           aba Revolução (bandeirinhas)
 js/net.js           aba Planificação (área da superfície)
+js/cap.js           aba Capacidade (litro, escada, latas, cisternas)
+js/proj.js          aba Projeções e vistas
 js/annotate.js      caneta, marca-texto e laser por cima da figura
 js/export.js        copiar a figura como imagem PNG
 js/share.js         link, cenários salvos e QR code
