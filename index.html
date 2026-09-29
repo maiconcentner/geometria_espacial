@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Geometria Espacial</title>
+<meta name="description" content="Explorando os objetos que nos cercam: volume de prismas e cilindros, sólidos de revolução, volume e capacidade, planificação, projeções ortogonais e vistas ortográficas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=STIX+Two+Text:ital,wght@0,500;1,500;1,600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 40 36" aria-hidden="true">
+        <path d="M4 12 16 5l20 5-12 7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M4 12v16l20 6V17M36 10v16l-12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M4 28l12-7 20 5M16 5v16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.5 2.5"/>
+      </svg>
+      <div>
+        <h1>Geometria Espacial</h1>
+        <p class="brand-sub">Explorando os objetos que nos cercam</p>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Módulos">
+      <button class="tab" role="tab" id="tab-vol" data-view="vol" aria-selected="true">Volume</button>
+    </nav>
+
+    <div class="tools">
+      <button class="tool" id="btn-copy-img" title="Copiar a figura como imagem, para colar em listas de exercícios (tecla C)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 5V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m5 16 4-4 3 3 2-2 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span>Copiar imagem</span>
+      </button>
+      <button class="tool" id="btn-annot" title="Anotar na tela: caneta, marca-texto e laser (tecla A)" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 4.5 5 5L9 20H4v-5L14.5 4.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m12.5 6.5 5 5" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Anotar</span>
+      </button>
+      <button class="tool" id="btn-full" title="Tela cheia (tecla F)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Tela cheia</span>
+      </button>
+      <button class="tool tool-primary" id="btn-panel" title="Painel do professor (tecla P)" aria-controls="panel" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Professor</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ VOLUME ============ -->
+  <main class="view" id="view-vol" aria-labelledby="tab-vol">
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title" id="vol-name"></h2>
+          <div class="fb-group">
+            <span class="hint">Arraste para girar</span>
+            <button class="fb" id="vol-cam0" title="Voltar para a vista padrão">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Vista padrão</span>
+            </button>
+          </div>
+        </div>
+        <div class="layerbar" role="group" aria-label="Mostrar">
+          <span class="fb-label">Mostrar</span>
+          <button class="chip" data-vflag="lab">Medidas</button>
+          <button class="chip" data-vflag="grid">Camadas</button>
+          <button class="chip" data-vflag="hidden" title="Arestas escondidas atrás do sólido aparecem tracejadas">Arestas ocultas</button>
+        </div>
+        <svg class="stage" id="vol-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sólido geométrico e área da base"></svg>
+        <div class="stepper">
+          <button class="step-btn" id="vol-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="vol-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="vol-replay" aria-label="Rever o movimento" title="Rever o movimento">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="vol-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="vol-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="vol-count"></p>
+        <h2 id="vol-title"></h2>
+        <div class="step-body" id="vol-body"></div>
+      </div>
+      <div class="card">
+        <h2>Sólido</h2>
+        <div class="solid-grid" id="vol-solids"></div>
+        <div class="dims" id="vol-dims"></div>
+        <div class="field-inline">
+          <span class="flabel">Unidade</span>
+          <div class="seg seg-sm" id="vol-unit"><button data-v="cm">cm</button><button data-v="dm">dm</button><button data-v="m">m</button></div>
+        </div>
+        <div class="field-inline">
+          <span class="flabel">Descobrir</span>
+          <div class="seg seg-sm" id="vol-ask"><button data-v="V">Volume</button><button data-v="h">Altura</button><button data-v="a">Aresta</button></div>
+        </div>
+        <div class="chips">
+          <button class="chip" id="vol-cap" title="Encher de água: volume e capacidade">Capacidade</button>
+          <button class="chip" id="vol-obl" title="Empurrar as camadas para o lado (Princípio de Cavalieri)">Inclinar</button>
+          <button class="chip" id="vol-lying" title="Cilindro deitado, como um reservatório">Deitado</button>
+        </div>
+      </div>
+      <details class="card" open>
+        <summary><h2>Atividades do livro</h2></summary>
+        <div class="questions" id="vol-book"></div>
+      </details>
+    </aside>
+  </main>
+
+  <!-- ============ PAINEL DO PROFESSOR ============ -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="panel" id="panel" aria-label="Painel do professor" hidden>
+    <div class="panel-head">
+      <h2>Painel do professor</h2>
+      <button class="icon-btn" id="panel-close" aria-label="Fechar painel">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <section class="pgroup">
+        <h3>Números</h3>
+        <div class="field-inline">
+          <span class="flabel">Valor de π</span>
+          <div class="seg seg-sm" id="seg-pi"><button data-v="3.14">3,14</button><button data-v="3">3</button><button data-v="pi">deixar π</button></div>
+        </div>
+        <div class="field-inline">
+          <span class="flabel">Casas decimais</span>
+          <div class="seg seg-sm" id="seg-dec"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div>
+        </div>
+      </section>
+      <section class="pgroup">
+        <h3>Apresentação</h3>
+        <div class="field-inline">
+          <span class="flabel">Tema</span>
+          <div class="seg seg-sm" id="seg-theme"><button data-v="light">Claro</button><button data-v="dark">Escuro</button><button data-v="auto">Auto</button></div>
+        </div>
+        <div class="field">
+          <label for="rg-font">Tamanho do texto</label>
+          <input type="range" id="rg-font" min="0.85" max="1.6" step="0.05">
+        </div>
+        <div class="field-inline">
+          <span class="flabel">Velocidade</span>
+          <div class="seg seg-sm" id="seg-speed"><button data-v="0.5">Lenta</button><button data-v="1">Normal</button><button data-v="2">Rápida</button></div>
+        </div>
+      </section>
+      <section class="pgroup">
+        <h3>Compartilhar com a turma</h3>
+        <p class="note">O link guarda a aba aberta e tudo o que está nela, inclusive o passo.</p>
+        <div class="share-row">
+          <input type="text" id="share-url" readonly aria-label="Link desta configuração">
+          <button class="btn" id="share-copy">Copiar</button>
+        </div>
+        <p class="note" id="share-msg" aria-live="polite"></p>
+        <button class="btn" id="btn-qr">Mostrar QR code para a turma</button>
+        <div class="field">
+          <label for="site-base">Endereço do site</label>
+          <input type="text" id="site-base" inputmode="url" spellcheck="false">
+          <p class="note">Os alunos abrem por este endereço (o do GitHub Pages).</p>
+        </div>
+      </section>
+      <section class="pgroup">
+        <h3>Cenários salvos</h3>
+        <p class="note">Guarda tudo o que está na tela para abrir de novo com um clique. Fica salvo neste navegador.</p>
+        <div class="share-row">
+          <input type="text" id="sc-name" placeholder="Ex.: Aula 1 · aquários" aria-label="Nome do cenário">
+          <button class="btn" id="sc-save">Salvar</button>
+        </div>
+        <p class="note" id="sc-msg" aria-live="polite"></p>
+        <ul class="sc-list" id="sc-list"></ul>
+        <button class="btn btn-ghost" id="reset-all">Restaurar padrão</button>
+      </section>
+      <section class="pgroup">
+        <h3>Atalhos de teclado</h3>
+        <dl class="keys" id="keys-list">
+          <dt><kbd>→</kbd> <kbd>Espaço</kbd></dt><dd>próximo passo (funciona com passador de slides)</dd>
+          <dt><kbd>←</kbd></dt><dd>passo anterior</dd>
+          <dt><kbd>Home</kbd></dt><dd>volta ao primeiro passo</dd>
+          <dt><kbd>R</kbd></dt><dd>rever o movimento do passo</dd>
+          <dt><kbd>1</kbd> … <kbd>7</kbd></dt><dd>trocar de aba</dd>
+          <dt><kbd>0</kbd></dt><dd>vista padrão da figura</dd>
+          <dt><kbd>H</kbd></dt><dd>arestas ocultas</dd>
+          <dt><kbd>C</kbd></dt><dd>copiar a figura como imagem</dd>
+          <dt><kbd>A</kbd></dt><dd>anotar na tela</dd>
+          <dt><kbd>F</kbd></dt><dd>tela cheia</dd>
+          <dt><kbd>P</kbd></dt><dd>painel do professor</dd>
+        </dl>
+      </section>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <div class="img-dialog" id="img-dialog" role="dialog" aria-label="Imagem da figura" hidden>
+    <div class="panel-head">
+      <h2>Imagem da figura</h2>
+      <button class="icon-btn" id="img-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <p class="note">O navegador não deixou copiar direto. Clique com o botão direito na imagem (ou segure, no celular) e escolha <b>Copiar imagem</b>, ou baixe o arquivo.</p>
+    <img id="img-preview" alt="Figura exportada">
+    <a class="btn" id="img-download" href="#">Baixar PNG</a>
+  </div>
+  <div class="img-dialog qr-dialog" id="qr-dialog" role="dialog" aria-label="QR code para a turma" hidden>
+    <div class="panel-head">
+      <h2>Aponte a câmera do celular</h2>
+      <button class="icon-btn" id="qr-close" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="qr-box" id="qr-box"></div>
+    <p class="qr-url" id="qr-url"></p>
+  </div>
+  <div class="annot-bar" id="annot-bar" role="toolbar" aria-label="Anotar na tela" hidden>
+    <button class="ab" data-atool="none" title="Mouse: mexer na figura sem apagar as anotações (Esc)" aria-label="Mouse">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3l12 9-5.5 1L10 19Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="ab" data-atool="pen" title="Caneta" aria-label="Caneta">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 4.5 5 5L9 20H4v-5L14.5 4.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="dotc" data-acolor="red" style="--c:#e03131" aria-label="Caneta vermelha"></button>
+    <button class="dotc" data-acolor="blue" style="--c:#1c7ed6" aria-label="Caneta azul"></button>
+    <button class="dotc" data-acolor="green" style="--c:#2f9e44" aria-label="Caneta verde"></button>
+    <button class="ab" data-atool="hl" title="Marca-texto" aria-label="Marca-texto">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16" stroke="#e0b100" stroke-width="3.5" stroke-linecap="round"/><path d="m13 4 5 5-7 7H6v-5l7-7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="ab" data-atool="laser" title="Apontador laser" aria-label="Apontador laser">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="#e03131"/><circle cx="12" cy="12" r="7.5" fill="none" stroke="#e03131" stroke-width="1.4" opacity=".6"/></svg>
+    </button>
+    <span class="chip-sep" aria-hidden="true"></span>
+    <button class="ab" id="annot-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12h10a6 6 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" transform="translate(0 -4)"/></svg>
+    </button>
+    <button class="ab" id="annot-clear" title="Apagar tudo desta aba" aria-label="Apagar tudo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="ab" id="annot-close" title="Fechar a barra de anotação" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/g3.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/volume.js"></script>
+<script src="js/vendor/qrcode.js"></script>
+<script src="js/annotate.js"></script>
+<script src="js/share.js"></script>
+<script src="js/export.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
