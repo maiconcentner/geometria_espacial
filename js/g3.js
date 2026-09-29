@@ -133,6 +133,9 @@
       e.feat = feat;
       return e;
     });
+    // arestas marcantes de cada face (para desenhar junto com a face)
+    m.FE = m.F.map(() => []);
+    m.E.forEach((e) => { if (e.feat) e.f.forEach((fi) => m.FE[fi].push(e)); });
     return m;
   };
 
@@ -193,7 +196,9 @@
         const j = (i + 1) % P;
         const pa = profile[i], pb = profile[j];
         if (pa[0] < 1e-9 && pb[0] < 1e-9) continue; // segmento sobre o eixo
-        const idx = [k * P + i, k * P + j, k2 * P + j, k2 * P + i];
+        // pontos sobre o eixo são o mesmo vértice em todos os anéis
+        const at = (kk, ii) => (profile[ii][0] < 1e-9 ? ii : kk * P + ii);
+        const idx = [at(k, i), at(k, j), at(k2, j), at(k2, i)];
         // tira vértices repetidos (no eixo)
         const uniq = [];
         idx.forEach((v) => { if (!uniq.some((u) => len(sub(V[u], V[v])) < 1e-9)) uniq.push(v); });
@@ -244,14 +249,21 @@
     let faces = '';
     list.forEach((it) => {
       const n = NV[it.i];
-      const lam = Math.max(0, (it.front ? 1 : -1) * dot(n, LIGHT));
-      const k = (it.front ? 0.66 : 0.5) + 0.42 * lam;
+      const lam = o.twoSided ? Math.abs(dot(n, LIGHT)) : Math.max(0, (it.front ? 1 : -1) * dot(n, LIGHT));
+      const k = (o.twoSided || it.front ? 0.66 : 0.5) + 0.42 * lam;
       const fill = shade(it.col, k);
       const a = alphaOf(it.f, it.i);
       if (a <= 0.001) return;
       const d = it.f.v.map((v, j) => (j ? 'L' : 'M') + f1(P[v][0]) + ' ' + f1(P[v][1])).join('') + 'Z';
       const seam = a >= 0.999 ? ' stroke="' + fill + '" stroke-width="0.7"' : '';
-      faces += '<path d="' + d + '" fill="' + fill + '"' + (a < 0.999 ? ' fill-opacity="' + a.toFixed(3) + '"' : '') + seam + (o.faceCls ? ' class="' + o.faceCls + '"' : '') + '/>';
+      const fc = o.faceCls ? (typeof o.faceCls === 'function' ? o.faceCls(it.f, it.i) : o.faceCls) : '';
+      faces += '<path d="' + d + '" fill="' + fill + '"' + (a < 0.999 ? ' fill-opacity="' + a.toFixed(3) + '"' : '') + seam + (fc ? ' class="' + fc + '"' : '') + '/>';
+      // contorno da face junto com ela (a ordem de pintura cuida do que fica escondido)
+      if (o.outline) faces += '<path d="' + d + '" class="' + (typeof o.outline === 'string' ? o.outline : 'edge') + '"/>';
+      if (o.faceEdges && m.FE) {
+        const ed = m.FE[it.i];
+        if (ed.length) faces += '<path class="' + (o.edgeCls || 'edge') + '" d="' + ed.map((e) => 'M' + f1(P[e.a][0]) + ' ' + f1(P[e.a][1]) + 'L' + f1(P[e.b][0]) + ' ' + f1(P[e.b][1])).join('') + '"/>';
+      }
     });
     let edges = '', hid = '';
     if (o.edges !== false) {
@@ -313,32 +325,178 @@
     return '<text x="' + f1(tx - (anchor === 'start' ? 6 : anchor === 'end' ? -6 : 0)) + '" y="' + f1(ty) + '" class="' + (cls || 'dim3') + '" text-anchor="' + anchor + '" dominant-baseline="middle">' + txt + '</text>';
   };
 
-  /* ---------- Arrastar para girar ---------- */
-  G.orbit = function (svg, get, set, opts) {
-    opts = opts || {};
-    let drag = null;
+  /* ---------- Controle da vista: girar, mover, aproximar ----------
+     arrastar: gira · botão direito, Shift ou dois dedos: move · roda ou pinça: aproxima
+     Botões: Perspectiva (padrão), Frente, Cima, Lado, −, +, Girar sozinho. */
+  const ICO = {
+    persp: '<path d="M4 8 12 4l8 4v8l-8 4-8-4Z M4 8l8 4 8-4M12 12v8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+    front: '<rect x="5" y="5" width="14" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2" fill="currentColor"/>',
+    top: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6Z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v6m-2.5-2.5L12 8l2.5-2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+    side: '<path d="M5 6h9v12H5zM14 6l5 3v12l-5-3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+    zout: '<circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5h5M15 15l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    zin: '<circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 10.5h5M10.5 8v5M15 15l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    spin: '<path d="M20 12a8 8 0 1 1-2.3-5.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  G.viewer = function (o) {
+    const svg = o.svg;
+    const P = o.prefix;
+    const cam0 = Object.assign({ yaw: -32, pitch: 24 }, o.cam0);
+    const lo = o.pitchMin == null ? -90 : o.pitchMin, hi = o.pitchMax == null ? 90 : o.pitchMax;
+    const v = { c: { yaw: cam0.yaw, pitch: cam0.pitch, zoom: 1, px: 0, py: 0 } };
+    let last = { cx: 500, cy: 270 };
+    let tw = null, spinRaf = 0;
+    const redraw = () => o.redraw();
+    const locked = () => !!(o.locked && o.locked());
+
+    /* Aplica zoom e deslocamento às opções da câmera de cada aba. */
+    v.apply = function (co) {
+      last = { cx: co.cx, cy: co.cy };
+      return Object.assign({}, co, {
+        yaw: co.yaw == null ? v.c.yaw : co.yaw,
+        pitch: co.pitch == null ? v.c.pitch : co.pitch,
+        s: co.s * v.c.zoom, cx: co.cx + v.c.px, cy: co.cy + v.c.py,
+      });
+    };
+    function stopSpin() {
+      if (spinRaf) cancelAnimationFrame(spinRaf);
+      spinRaf = 0;
+      const b = document.getElementById(P + '-spin');
+      if (b) b.setAttribute('aria-pressed', 'false');
+    }
+    v.goTo = function (to, dur) {
+      stopSpin();
+      if (tw) tw.cancel();
+      const from = Object.assign({}, v.c);
+      let dy = to.yaw - from.yaw;
+      while (dy > 180) dy -= 360;
+      while (dy < -180) dy += 360;
+      const z1 = to.zoom == null ? from.zoom : to.zoom;
+      const px1 = to.px == null ? from.px : to.px, py1 = to.py == null ? from.py : to.py;
+      tw = GE.tween((dur == null ? 700 : dur) / GE.state.speed, (t) => {
+        const e = GE.ease(t);
+        v.c.yaw = from.yaw + dy * e;
+        v.c.pitch = from.pitch + (to.pitch - from.pitch) * e;
+        v.c.zoom = from.zoom + (z1 - from.zoom) * e;
+        v.c.px = from.px + (px1 - from.px) * e;
+        v.c.py = from.py + (py1 - from.py) * e;
+        redraw();
+      }, () => { tw = null; });
+    };
+    v.reset = () => v.goTo({ yaw: cam0.yaw, pitch: cam0.pitch, zoom: 1, px: 0, py: 0 });
+    v.zoomBy = function (f, mx, my) {
+      const z0 = v.c.zoom;
+      const z1 = GE.clamp(z0 * f, 0.4, 4);
+      if (mx != null) {
+        // o ponto sob o cursor fica parado
+        const k = z1 / z0;
+        v.c.px = mx - last.cx - (mx - last.cx - v.c.px) * k;
+        v.c.py = my - last.cy - (my - last.cy - v.c.py) * k;
+      } else {
+        v.c.px *= z1 / z0; v.c.py *= z1 / z0;
+      }
+      v.c.zoom = z1;
+      redraw();
+    };
+    v.toggleSpin = function () {
+      if (spinRaf) { stopSpin(); return; }
+      if (locked()) return;
+      const b = document.getElementById(P + '-spin');
+      if (b) b.setAttribute('aria-pressed', 'true');
+      let t0 = 0;
+      const step = (ts) => {
+        if (t0) v.c.yaw += (ts - t0) * 0.03 * GE.state.speed;
+        t0 = ts;
+        redraw();
+        spinRaf = requestAnimationFrame(step);
+      };
+      spinRaf = requestAnimationFrame(step);
+    };
+
+    /* Botões */
+    const bar = document.getElementById(P + '-viewbar');
+    if (bar) {
+      const btn = (id, ico, label, title, extra) => '<button class="fb vb" id="' + P + '-' + id + '" title="' + title + '" aria-label="' + label + '"' + (extra || '') + '><svg viewBox="0 0 24 24" aria-hidden="true">' + ico + '</svg><span>' + label + '</span></button>';
+      bar.innerHTML =
+        btn('cam0', ICO.persp, 'Perspectiva', 'Vista padrão, em perspectiva (tecla 0)') +
+        btn('vfront', ICO.front, 'Frente', 'Olhar de frente') +
+        btn('vtop', ICO.top, 'Cima', 'Olhar de cima') +
+        btn('vside', ICO.side, 'Lado', 'Olhar do lado direito') +
+        '<span class="vb-sep" aria-hidden="true"></span>' +
+        btn('zout', ICO.zout, 'Afastar', 'Afastar (tecla −)', ' data-icon') +
+        btn('zin', ICO.zin, 'Aproximar', 'Aproximar (tecla +)', ' data-icon') +
+        btn('spin', ICO.spin, 'Girar sozinho', 'Girar sozinho até clicar de novo', ' aria-pressed="false"');
+      const on = (id, fn) => document.getElementById(P + '-' + id).addEventListener('click', fn);
+      on('cam0', () => v.reset());
+      on('vfront', () => { if (!locked()) v.goTo({ yaw: 0, pitch: 0 }); });
+      on('vtop', () => { if (!locked()) v.goTo({ yaw: 0, pitch: Math.min(90, hi) }); });
+      on('vside', () => { if (!locked()) v.goTo({ yaw: -90, pitch: 0 }); });
+      on('zout', () => v.zoomBy(1 / 1.25));
+      on('zin', () => v.zoomBy(1.25));
+      on('spin', () => v.toggleSpin());
+    }
+
+    /* Mouse e toque */
+    const pts = new Map();
+    let drag = null, pinch = null;
+    const toSvg = (e) => {
+      const r = svg.getBoundingClientRect();
+      const vb = svg.viewBox.baseVal;
+      const k = Math.max(vb.width / r.width, vb.height / r.height);
+      const ox = (r.width * k - vb.width) / 2, oy = (r.height * k - vb.height) / 2;
+      return [(e.clientX - r.left) * k - ox, (e.clientY - r.top) * k - oy, k];
+    };
+    svg.addEventListener('contextmenu', (e) => e.preventDefault());
     svg.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0 && e.pointerType === 'mouse') return;
-      if (opts.skip && opts.skip(e)) return;
-      if (opts.locked && opts.locked()) return;
-      drag = { x: e.clientX, y: e.clientY, c: get() };
+      if (o.skip && o.skip(e)) return;
+      pts.set(e.pointerId, toSvg(e));
       svg.setPointerCapture(e.pointerId);
+      stopSpin();
+      if (tw) { tw.cancel(); tw = null; }
+      if (pts.size === 2) {
+        const [a, b] = Array.from(pts.values());
+        pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] };
+        drag = null;
+        return;
+      }
+      const pan = e.button === 2 || e.button === 1 || e.shiftKey || locked();
+      drag = { p: toSvg(e), c: Object.assign({}, v.c), pan };
       svg.classList.add('dragging');
     });
     svg.addEventListener('pointermove', (e) => {
+      if (!pts.has(e.pointerId)) return;
+      pts.set(e.pointerId, toSvg(e));
+      if (pinch && pts.size === 2) {
+        const [a, b] = Array.from(pts.values());
+        const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+        const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        v.c.px += m[0] - pinch.m[0]; v.c.py += m[1] - pinch.m[1];
+        v.zoomBy(d / (pinch.d || d), m[0], m[1]);
+        pinch = { d, m };
+        return;
+      }
       if (!drag) return;
-      const r = svg.getBoundingClientRect();
-      const k = 1000 / Math.max(1, r.width);
-      const dyaw = (e.clientX - drag.x) * k * 0.35;
-      const dp = (e.clientY - drag.y) * k * 0.3;
-      const lo = opts.pitchMin == null ? -85 : opts.pitchMin, hi = opts.pitchMax == null ? 85 : opts.pitchMax;
-      let yaw = drag.c.yaw + dyaw;
-      if (opts.yawMin != null) yaw = GE.clamp(yaw, opts.yawMin, opts.yawMax);
-      set({ yaw, pitch: GE.clamp(drag.c.pitch + dp, lo, hi) });
+      const q = toSvg(e);
+      const dx = q[0] - drag.p[0], dy = q[1] - drag.p[1];
+      if (drag.pan) { v.c.px = drag.c.px + dx; v.c.py = drag.c.py + dy; }
+      else {
+        v.c.yaw = drag.c.yaw + dx * 0.35;
+        v.c.pitch = GE.clamp(drag.c.pitch + dy * 0.3, lo, hi);
+      }
+      redraw();
     });
-    const end = () => { drag = null; svg.classList.remove('dragging'); };
+    const end = (e) => {
+      pts.delete(e.pointerId);
+      if (pts.size < 2) pinch = null;
+      if (!pts.size) { drag = null; svg.classList.remove('dragging'); }
+    };
     svg.addEventListener('pointerup', end);
     svg.addEventListener('pointercancel', end);
+    svg.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const q = toSvg(e);
+      v.zoomBy(Math.exp(-e.deltaY * 0.0015), q[0], q[1]);
+    }, { passive: false });
+    return v;
   };
 
   /* Anima a câmera até outra posição. */

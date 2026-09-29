@@ -328,8 +328,7 @@
 
   /* ---------- Desenho ---------- */
   const COL = { solid: '#f2a15f', base: '#5aa7e8', layer: '#79b8f0', glass: '#d7e7f2', water: '#3d8fd6', ghost: '#8a98a6' };
-  let camV = { yaw: -32, pitch: 26 };
-  const CAM0 = { yaw: -32, pitch: 26 };
+  let view = null;   // controle da vista (girar, mover, aproximar)
 
   function draw(s) {
     const o = S();
@@ -347,7 +346,7 @@
     const R = Math.sqrt(rb * rb + (H / 2) * (H / 2)) + shMax / 2;
     const scale = (170 / R) * GE.lerp(1, 0.78, s.inset);
     const cx = GE.lerp(500, 300, s.inset);
-    const cam = G.cam({ yaw: camV.yaw, pitch: camV.pitch, s: scale, cx, cy: 275, center: T([sh / 2, H / 2, 0]) });
+    const cam = G.cam(view.apply({ s: scale, cx, cy: 275, center: T([sh / 2, H / 2, 0]) }));
     let out = '';
     const hid = GE.state.hidden;
     const hp = Math.max(1e-6, s.fill * H);
@@ -709,6 +708,7 @@
     svgId: 'vol-svg',
     name() { const o = S(); const q = BOOK.find((b) => b.id === o.q); return 'Volume · ' + (q ? q.book : SOLIDS[o.solid].name); },
     init() {
+      view = G.viewer({ svg: $('vol-svg'), prefix: 'vol', cam0: { yaw: -32, pitch: 26 }, redraw: () => stp && stp.redraw() });
       stp = GE.stepper({
         prefix: 'vol',
         steps,
@@ -748,11 +748,6 @@
         if (k === 'hidden') GE.set({ hidden: !GE.state.hidden });
         else GE.patch('vol', { [k]: !S()[k] });
       }));
-      $('vol-cam0').addEventListener('click', () => {
-        const from = Object.assign({}, camV);
-        G.camTween(from, CAM0, 700, (c) => { camV = c; stp.redraw(); });
-      });
-      G.orbit($('vol-svg'), () => camV, (c) => { camV = c; stp.redraw(); }, { pitchMin: -10, pitchMax: 80 });
       GE.on((changed, prev, opts) => {
         if (changed.includes('vol') && !opts.quiet) {
           const a = prev.vol || {}, b = S();
@@ -774,4 +769,5 @@
     redraw() { if (stp) stp.redraw(); },
   };
   GE.register('vol', mod);
+  GE.geom = { dims, basePoly, areaOf, volOf, val, symTxt, tail, dimName, baseRadius };
 })();

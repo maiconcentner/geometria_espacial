@@ -84,7 +84,11 @@
     const vs = views();
     if (/^[1-9]$/.test(key) && vs[Number(key) - 1]) { GE.set({ view: vs[Number(key) - 1] }); return; }
     if (mod.key && mod.key(e)) return;
+    const vb = (id) => { const b = $(GE.state.view + '-' + id); if (b) { b.click(); return true; } return false; };
+    if ((key === '+' || key === '=') && vb('zin')) return;
+    if ((key === '-' || key === '_') && vb('zout')) return;
     switch (key.toLowerCase()) {
+      case 'g': vb('spin'); break;
       case 'r': if (mod.stepper && mod.stepper()) mod.stepper().replay(); break;
       case '0': { const b = $(GE.state.view + '-cam0'); if (b) b.click(); break; }
       case 'h': GE.set({ hidden: !GE.state.hidden }); break;

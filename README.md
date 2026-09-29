@@ -35,6 +35,30 @@ Segue os princípios dos projetos *Relações Métricas Dinâmicas* e *Fábrica 
 | 7d | aquário cilíndrico: *r* = 10 cm, *h* = 30 cm |
 | 8 | reservatório de gás deitado (diâmetro → raio) e botijões de 13 L |
 
+## Mexer na figura com o mouse (todas as figuras 3D)
+
+- **Arrastar**: gira o sólido para vê-lo de qualquer ângulo.
+- **Botão direito** (ou **Shift** + arrastar): move a figura na tela.
+- **Roda do mouse**: aproxima e afasta; no celular, **pinça** com dois dedos (e arrastar com dois dedos move).
+- Botões **Perspectiva** (vista padrão, tecla `0`), **Frente**, **Cima** e **Lado**: a câmera vai até lá com animação.
+- **−** e **+** (teclas `−` e `+`) e **Girar sozinho** (tecla `G`): o sólido fica girando até clicar de novo.
+
+## Revolução (Fase 2)
+
+As **bandeirinhas** da Atividade 5 e do *Organizando as ideias*: uma figura plana presa a um palito (o **eixo**) gira **um quarto de volta por clique** (90°, 180°, 360°), desenhando a superfície; linhas tracejadas mostram o caminho circular dos pontos.
+
+- Retângulo → **cilindro**; triângulo retângulo → **cone** (com altura, raio e **geratriz**); semicírculo → **esfera**; bandeira azul (retângulo com meia-lua) → **esfera achatada**.
+- Para explorar: trapézio → **tronco de cone**; triângulo com um lado no palito → **dois cones**; retângulo longe do palito → **cilindro oco** (cano); círculo longe do palito → **toro** (rosquinha).
+- **Votação**: antes de girar, a turma escolhe que sólido vai aparecer; o resultado e o placar aparecem no último passo, com exemplos do dia a dia.
+
+## Planificação (Fase 2)
+
+O sólido **abre um movimento por clique**, como uma caixa de papelão: as faces laterais deitam em volta da base, depois a tampa. No cilindro, as bases abrem e a parede **desenrola** até virar um retângulo cujo comprimento é o **contorno do círculo** (2π*r*).
+
+- Cada face mostra a sua área (em azul as bases, em verde as faces laterais); área lateral = perímetro da base × altura; área total = 2 · *A*<sub>base</sub> + *A*<sub>lateral</sub>. No prisma triangular, a hipotenusa da base sai por Pitágoras.
+- **Atividade 11 (silo)**: só a tampa e a parede são pintadas (o piso fica cinza); *C* = 4π m, parede 80π m², tampa 4π m², total 252 m² com π = 3 e **42 litros** de tinta.
+- Também: caixa de papelão e lata de alumínio. No último passo, o sólido **se monta de novo**.
+
 ## Ferramentas de aula
 
 - **Copiar imagem** (tecla `C`): a figura como PNG, fundo branco, pronta para listas.
@@ -55,9 +79,11 @@ Para usar sem internet, basta abrir o `index.html` no navegador.
 index.html          página única
 css/style.css       visual (tema claro/escuro, responsivo)
 js/core.js          estado, números, link, animação e o controlador de passos (comum a todas as abas)
-js/g3.js            motor 3D em SVG: câmera, malhas, sombreamento, arestas visíveis e ocultas
+js/g3.js            motor 3D em SVG: câmera, malhas, sombreamento, arestas ocultas, controle da vista
 js/icons.js         desenhos dos sólidos nos botões
 js/volume.js        aba Volume
+js/rev.js           aba Revolução (bandeirinhas)
+js/net.js           aba Planificação (área da superfície)
 js/annotate.js      caneta, marca-texto e laser por cima da figura
 js/export.js        copiar a figura como imagem PNG
 js/share.js         link, cenários salvos e QR code

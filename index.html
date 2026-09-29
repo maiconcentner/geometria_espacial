@@ -28,6 +28,8 @@
 
     <nav class="tabs" role="tablist" aria-label="Módulos">
       <button class="tab" role="tab" id="tab-vol" data-view="vol" aria-selected="true">Volume</button>
+      <button class="tab" role="tab" id="tab-rev" data-view="rev" aria-selected="false">Revolução</button>
+      <button class="tab" role="tab" id="tab-net" data-view="net" aria-selected="false">Planificação</button>
     </nav>
 
     <div class="tools">
@@ -56,13 +58,7 @@
       <section class="stage-wrap">
         <div class="figbar" role="toolbar" aria-label="Figura">
           <h2 class="fig-title" id="vol-name"></h2>
-          <div class="fb-group">
-            <span class="hint">Arraste para girar</span>
-            <button class="fb" id="vol-cam0" title="Voltar para a vista padrão">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Vista padrão</span>
-            </button>
-          </div>
+          <div class="fb-group viewbar" id="vol-viewbar" role="group" aria-label="Vista da figura"></div>
         </div>
         <div class="layerbar" role="group" aria-label="Mostrar">
           <span class="fb-label">Mostrar</span>
@@ -71,6 +67,7 @@
           <button class="chip" data-vflag="hidden" title="Arestas escondidas atrás do sólido aparecem tracejadas">Arestas ocultas</button>
         </div>
         <svg class="stage" id="vol-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sólido geométrico e área da base"></svg>
+        <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
         <div class="stepper">
           <button class="step-btn" id="vol-prev" aria-label="Passo anterior">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -117,6 +114,105 @@
       <details class="card" open>
         <summary><h2>Atividades do livro</h2></summary>
         <div class="questions" id="vol-book"></div>
+      </details>
+    </aside>
+  </main>
+
+
+  <!-- ============ REVOLUÇÃO ============ -->
+  <main class="view" id="view-rev" aria-labelledby="tab-rev" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title" id="rev-name"></h2>
+          <div class="fb-group viewbar" id="rev-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="rev-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Figura plana girando em torno de um eixo"></svg>
+        <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
+        <div class="stepper">
+          <button class="step-btn" id="rev-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="rev-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="rev-replay" aria-label="Rever o movimento" title="Rever o movimento (tecla R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="rev-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="rev-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="rev-count"></p>
+        <h2 id="rev-title"></h2>
+        <div class="step-body" id="rev-body"></div>
+      </div>
+      <div class="card">
+        <h2>Que sólido vai aparecer?</h2>
+        <div class="vote-grid" id="rev-vote"></div>
+        <p class="note" id="rev-score"></p>
+      </div>
+      <div class="card">
+        <h2>Bandeirinhas</h2>
+        <div class="solid-grid" id="rev-shapes"></div>
+        <p class="note">As três primeiras são as da Atividade 5 e do <i>Organizando as ideias</i>; as outras são para explorar.</p>
+      </div>
+    </aside>
+  </main>
+
+
+  <!-- ============ PLANIFICAÇÃO ============ -->
+  <main class="view" id="view-net" aria-labelledby="tab-net" hidden>
+    <div class="col-main">
+      <section class="stage-wrap">
+        <div class="figbar" role="toolbar" aria-label="Figura">
+          <h2 class="fig-title" id="net-name"></h2>
+          <div class="fb-group viewbar" id="net-viewbar" role="group" aria-label="Vista da figura"></div>
+        </div>
+        <svg class="stage" id="net-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sólido se abrindo em uma planificação"></svg>
+        <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
+        <div class="stepper">
+          <button class="step-btn" id="net-prev" aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dots" id="net-dots" aria-label="Passos"></div>
+          <button class="step-btn" id="net-replay" aria-label="Rever o movimento" title="Rever o movimento (tecla R)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 3v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="step-btn" id="net-play" aria-label="Reproduzir até o fim" title="Reproduzir até o fim">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button class="step-btn step-next" id="net-next" aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+    <aside class="side">
+      <div class="card step-card" aria-live="polite">
+        <p class="eyebrow" id="net-count"></p>
+        <h2 id="net-title"></h2>
+        <div class="step-body" id="net-body"></div>
+      </div>
+      <div class="card">
+        <h2>Sólido</h2>
+        <div class="solid-grid" id="net-solids"></div>
+        <div class="dims" id="net-dims"></div>
+        <div class="field-inline">
+          <span class="flabel">Unidade</span>
+          <div class="seg seg-sm" id="net-unit"><button data-v="cm">cm</button><button data-v="dm">dm</button><button data-v="m">m</button></div>
+        </div>
+      </div>
+      <details class="card" open>
+        <summary><h2>Situações</h2></summary>
+        <div class="questions" id="net-book"></div>
       </details>
     </aside>
   </main>
@@ -191,7 +287,11 @@
           <dt><kbd>Home</kbd></dt><dd>volta ao primeiro passo</dd>
           <dt><kbd>R</kbd></dt><dd>rever o movimento do passo</dd>
           <dt><kbd>1</kbd> … <kbd>7</kbd></dt><dd>trocar de aba</dd>
+          <dt>arrastar</dt><dd>girar a figura (botão direito ou Shift + arrastar: mover)</dd>
+          <dt>roda do mouse</dt><dd>aproximar ou afastar (no celular: pinça)</dd>
           <dt><kbd>0</kbd></dt><dd>vista padrão da figura</dd>
+          <dt><kbd>+</kbd> <kbd>−</kbd></dt><dd>aproximar / afastar</dd>
+          <dt><kbd>G</kbd></dt><dd>girar sozinho (liga e desliga)</dd>
           <dt><kbd>H</kbd></dt><dd>arestas ocultas</dd>
           <dt><kbd>C</kbd></dt><dd>copiar a figura como imagem</dd>
           <dt><kbd>A</kbd></dt><dd>anotar na tela</dd>
@@ -256,6 +356,8 @@
 <script src="js/g3.js"></script>
 <script src="js/icons.js"></script>
 <script src="js/volume.js"></script>
+<script src="js/rev.js"></script>
+<script src="js/net.js"></script>
 <script src="js/vendor/qrcode.js"></script>
 <script src="js/annotate.js"></script>
 <script src="js/share.js"></script>
