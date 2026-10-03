@@ -18,7 +18,7 @@
   const DEF = { g: 'ex', lvl: 1, ex: null, step: 0, teams: [{ n: 'Equipe 1', p: 0 }, { n: 'Equipe 2', p: 0 }], clock: 60, vq: null, rq: null };
   const S = () => GE.state.game;
   function sanitize(o) {
-    if (!['ex', 'vista', 'rev'].includes(o.g)) o.g = 'ex';
+    if (!['ex', 'vista', 'rev', 'class'].includes(o.g)) o.g = 'ex';
     o.lvl = GE.clamp(Math.round(Number(o.lvl) || 1), 1, 3);
     if (!Array.isArray(o.teams) || !o.teams.length) o.teams = DEF.teams.map((t) => Object.assign({}, t));
     o.teams = o.teams.slice(0, 4).map((t, i) => ({ n: String((t && t.n) || 'Equipe ' + (i + 1)).slice(0, 24), p: Math.round(Number(t && t.p) || 0) }));
@@ -375,10 +375,70 @@
       $('game-svg').innerHTML = r.hidden + r.faces + r.edges + '<text class="tag3" x="500" y="510">Que bandeirinha, girando, forma este sólido?</text>';
     }
   }
+  /* ================= Prisma ou corpo redondo? (Atividade 6) ================= */
+  const pyramid = () => {
+    const V = [[-1, 0, -1], [1, 0, -1], [1, 0, 1], [-1, 0, 1], [0, 1.6, 0]];
+    const F = [{ v: [3, 2, 1, 0], part: 'base' }, { v: [0, 1, 4], part: 'lat' }, { v: [1, 2, 4], part: 'lat' }, { v: [2, 3, 4], part: 'lat' }, { v: [3, 0, 4], part: 'lat' }];
+    return G.prep({ V, F, convex: true, center: [0, 0.4, 0] });
+  };
+  const sphere = (r) => G.revolve(Array.from({ length: 25 }, (_, i) => { const a = -Math.PI / 2 + (Math.PI * i) / 24; return [r * Math.cos(a), r + r * Math.sin(a)]; }), Math.PI * 2, 40);
+  const coneM = (r, h) => G.revolve([[0, 0], [r, 0], [0, h]], Math.PI * 2, 48);
+  const CLASS = [
+    { n: 'Torre Westhafen (Frankfurt)', t: 'redondo', k: 'cilindro', m: () => G.cylinder(0.9, 2.6, [0, 0], 48), R: 0.9, ax: 'y' },
+    { n: 'Globo Ericsson (Estocolmo)', t: 'redondo', k: 'esfera', m: () => sphere(1.1), R: 1.1, ax: 's' },
+    { n: 'Telhado do Museu Bundeskunsthalle (Bonn)', t: 'redondo', k: 'cone', m: () => coneM(1, 1.8), R: 1, ax: 'c' },
+    { n: 'Lata de refrigerante', t: 'redondo', k: 'cilindro', m: () => G.cylinder(0.7, 2, [0, 0], 48), R: 0.7, ax: 'y' },
+    { n: 'Bola de futebol', t: 'redondo', k: 'esfera', m: () => sphere(1), R: 1, ax: 's' },
+    { n: 'Casquinha de sorvete', t: 'redondo', k: 'cone', m: () => G.xform(coneM(0.8, 2), (p) => [p[0], 2 - p[1], p[2]]), R: 0.8, ax: 'c' },
+    { n: 'Aquário de Leonardo', t: 'prisma', k: 'cubo', m: () => G.box(-1, 0, -1, 2, 2, 2), b: 4 },
+    { n: 'Tijolo', t: 'prisma', k: 'paralelepípedo', m: () => G.box(-1.2, 0, -0.55, 2.4, 0.7, 1.1), b: 4 },
+    { n: 'Caixa de chocolate', t: 'prisma', k: 'prisma triangular', m: () => G.prism([[-1, 0.7], [1, 0.7], [-1, -0.7]], 1.6), b: 3 },
+    { n: 'Lápis sextavado (gigante)', t: 'prisma', k: 'prisma hexagonal', m: () => G.prism(G.regular(6, 0.6, 0), 2.6), b: 6 },
+    { n: 'Barraca de camping', t: 'prisma', k: 'prisma triangular (deitado)', m: () => G.xform(G.prism([[-1.1, 0], [1.1, 0], [0, 1.5]].map((p) => [p[0], p[1]]), 2.2), (p) => [p[0], p[2], p[1] - 1.1]), b: 3 },
+    { n: 'Dado', t: 'prisma', k: 'cubo', m: () => G.box(-0.9, 0, -0.9, 1.8, 1.8, 1.8), b: 4 },
+    { n: 'Pirâmide do Louvre (Paris)', t: 'outro', k: 'pirâmide', m: pyramid },
+  ];
+  const CLASS_OPTS = [{ v: 'prisma', t: 'Prisma' }, { v: 'redondo', t: 'Corpo redondo' }, { v: 'outro', t: 'Nenhum dos dois' }];
+  function newClassQ(prev) {
+    const left = CLASS.map((_, i) => i).filter((i) => !(prev && prev.seen || []).includes(i));
+    const pool = left.length ? left : CLASS.map((_, i) => i);
+    const i = pick(pool);
+    return { i, pick: -1, seen: (left.length ? (prev && prev.seen) || [] : []).concat([i]) };
+  }
+  let roll = 0, rollTw = null;
+  function drawClass() {
+    const o = S();
+    if (!o.cq) o.cq = newClassQ();
+    const it = CLASS[o.cq.i];
+    let m = it.m();
+    // corpo redondo: rola pela mesa depois da resposta
+    if (roll > 0 && it.t === 'redondo') {
+      const a = roll * Math.PI * 2;
+      if (it.ax === 'y') m = G.xform(m, (p) => [p[0], p[2] + it.R, p[1] - 1.1]);       // deita o cilindro
+      if (it.ax === 'c') m = G.xform(m, (p) => [p[0], p[2] + it.R, p[1]]);
+      const cy = it.R;
+      m = G.xform(m, (p) => { const y = p[1] - cy, x = p[0]; return [x * Math.cos(a) + y * Math.sin(a) + it.R * a - 3, -x * Math.sin(a) + y * Math.cos(a) + cy, p[2]]; });
+    }
+    const ys = it.m().V.map((p) => p[1]);
+    const cam = G.cam(view.apply({ s: 95, cx: 500, cy: 300, center: [0, (Math.max.apply(null, ys) + Math.min.apply(null, ys)) / 2, 0] }));
+    const r = G.render(m, cam, { colors: { '*': '#f2a15f' }, hidden: GE.state.hidden });
+    let tbl = '';
+    if (roll > 0) {
+      const a = cam.p([-4.5, 0, 1.5]), b = cam.p([6, 0, 1.5]), c = cam.p([6, 0, -1.5]), d = cam.p([-4.5, 0, -1.5]);
+      tbl = '<path class="table3" d="M' + [a, b, c, d].map((q) => G.f1(q[0]) + ' ' + G.f1(q[1])).join('L') + 'Z"/>';
+    }
+    $('game-svg').innerHTML = tbl + r.hidden + r.faces + r.edges + '<text class="tag3 obj-name" x="500" y="40">' + esc(it.n) + '</text>';
+  }
+  function classWhy(it) {
+    if (it.t === 'prisma') return 'É um <b>' + it.k + '</b>: só tem superfícies planas (faces), duas bases iguais e paralelas, e não rola. Tem ' + (it.b + 2) + ' faces, ' + 3 * it.b + ' arestas e ' + 2 * it.b + ' vértices.';
+    if (it.t === 'redondo') return 'É ' + (it.k === 'esfera' ? 'uma' : 'um') + ' <b>' + it.k + '</b>: tem superfície curva e, numa mesa levemente inclinada, <b>rola</b>.';
+    return 'É uma <b>pirâmide</b>: só tem faces planas (não é corpo redondo), mas tem uma única base e as faces laterais são triângulos que se encontram num vértice (não é prisma).';
+  }
   function draw(s) {
     const o = S();
     if (o.g === 'ex') drawEx(s);
     else if (o.g === 'vista') drawVista();
+    else if (o.g === 'class') drawClass();
     else drawRev();
   }
 
@@ -402,6 +462,12 @@
       const q = o.vq;
       $('game-q').innerHTML = '<span class="book">Qual é a vista?</span> Qual destas figuras é a <b>vista ' + VNAMES[q.k] + '</b> da pilha de cubos? Arraste para girar a pilha.';
       area.innerHTML = '<div class="opt-row">' + q.opts.map((M, i) => '<button class="opt' + (q.pick >= 0 ? (i === q.right ? ' ok' : i === q.pick ? ' no' : '') : '') + '" data-o="' + i + '"><span class="opt-l">' + 'ABCD'[i] + '</span>' + gridSvg(M) + '</button>').join('') + '</div>' + resultBox(q, 'vista');
+    } else if (o.g === 'class') {
+      if (!o.cq) o.cq = newClassQ();
+      const q = o.cq;
+      const it = CLASS[q.i];
+      $('game-q').innerHTML = '<span class="book">Atividade 6</span> <b>' + esc(it.n) + '</b>: é um prisma ou um corpo redondo? Arraste para girar.';
+      area.innerHTML = '<div class="opt-row three">' + CLASS_OPTS.map((x, i) => '<button class="opt' + (q.pick >= 0 ? (x.v === it.t ? ' ok' : i === q.pick ? ' no' : '') : '') + '" data-o="' + i + '"><span class="opt-l">' + 'ABC'[i] + '</span><span class="opt-t">' + x.t + '</span></button>').join('') + '</div>' + resultBox(q, 'class');
     } else {
       if (!o.rq) o.rq = newRevQ();
       const q = o.rq;
@@ -417,6 +483,7 @@
   }
   function isRight(q, kind, i) {
     if (kind === 'vista') return i === q.right;
+    if (kind === 'class') return CLASS_OPTS[i].v === CLASS[q.i].t;
     const sh = GE.REV_SHAPES.find((x) => x.id === q.id);
     return q.dir === 'flag' ? q.opts[i] === sh.solid : q.opts[i] === sh.id;
   }
@@ -424,6 +491,7 @@
     if (q.pick < 0) return '<p class="note">Cada equipe escolhe uma letra. Toque na resposta da turma para conferir.</p>';
     const ok = isRight(q, kind, q.pick);
     let why = '';
+    if (kind === 'class') why = ' ' + classWhy(CLASS[q.i]);
     if (kind === 'rev') { const sh = GE.REV_SHAPES.find((x) => x.id === q.id); why = ' ' + sh.flag + ' → <b>' + sh.solid + '</b>.'; }
     return '<div class="g-msg"><p class="big-msg ' + (ok ? 'ok' : 'err') + '"><b>' + (ok ? 'Certo!' : 'Não é essa.') + '</b>' + why + '</p>' +
       (ok ? '<p>Quem acertou ganha 2 pontos:</p>' + teamButtons('win') : '<p>A resposta certa está em verde.</p>') + '</div>';
@@ -495,6 +563,7 @@
     if (o.g === 'ex') patch.ex = gen(o.lvl);
     if (o.g === 'vista') patch.vq = newVistaQ();
     if (o.g === 'rev') patch.rq = newRevQ();
+    if (o.g === 'class') { patch.cq = newClassQ(o.cq); roll = 0; if (rollTw) rollTw.cancel(); }
     view.home({ yaw: -32, pitch: 24 });
     GE.patch('game', patch);
   }
@@ -503,7 +572,7 @@
     defaults: DEF,
     sanitize,
     svgId: 'game-svg',
-    name: () => 'Desafios · ' + ({ ex: 'exercícios', vista: 'qual é a vista?', rev: 'que sólido gira?' })[S().g],
+    name: () => 'Desafios · ' + ({ ex: 'exercícios', vista: 'qual é a vista?', rev: 'que sólido gira?', class: 'prisma ou corpo redondo?' })[S().g],
     init() {
       view = G.viewer({ svg: $('game-svg'), prefix: 'game', cam0: { yaw: -32, pitch: 24 }, redraw: () => stp && stp.redraw() });
       stp = GE.stepper({
@@ -512,7 +581,7 @@
         setIndex: (i) => GE.set({ game: Object.assign({}, S(), { step: i }) }, { quiet: true }),
       });
       stp.bind();
-      $('game-g').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b && b.dataset.v !== S().g) { GE.patch('game', { g: b.dataset.v, step: 0 }); } });
+      $('game-g').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b && b.dataset.v !== S().g) { roll = 0; GE.patch('game', { g: b.dataset.v, step: 0 }); } });
       $('game-lvl').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) GE.patch('game', { lvl: Number(b.dataset.v), ex: gen(Number(b.dataset.v)), step: 0 }); });
       $('game-new').addEventListener('click', newRound);
       $('game-copy').addEventListener('click', () => {
@@ -531,10 +600,17 @@
         const t = e.target.closest('[data-act]');
         if (t) { addPoints(Number(t.dataset.team), 2); return; }
         if (!b) return;
-        const key = o.g === 'vista' ? 'vq' : 'rq';
+        const key = o.g === 'vista' ? 'vq' : o.g === 'class' ? 'cq' : 'rq';
         const q = Object.assign({}, o[key], { pick: Number(b.dataset.o) });
         GE.set({ game: Object.assign({}, o, { [key]: q }) }, { quiet: true });
         renderArea();
+        if (o.g === 'class') {
+          // depois da resposta, o corpo redondo rola pela mesa
+          roll = 0;
+          if (rollTw) rollTw.cancel();
+          if (CLASS[q.i].t === 'redondo') rollTw = GE.tween(2600 / GE.state.speed, (t) => { roll = 0.001 + t; drawClass(); });
+          else drawClass();
+        }
         if (o.g === 'vista' && isRight(q, 'vista', q.pick)) {
           // a câmera vai até a vista pedida
           const V = { frente: { yaw: 0, pitch: 0 }, cima: { yaw: 0, pitch: 90 }, esq: { yaw: 90, pitch: 0 }, dir: { yaw: -90, pitch: 0 } }[q.k];

@@ -20,7 +20,12 @@ Segue os princípios dos projetos *Relações Métricas Dinâmicas* e *Fábrica 
 - **Uma camada** (1 cm de altura, com os cubinhos quando as medidas são pequenas) e depois as camadas **empilhadas** até a altura: *V* = *A*<sub>base</sub> · *h*.
 - **Capacidade**: o sólido vira um recipiente de vidro e **enche de água**; 1 cm³ = 1 mL, 1 dm³ = 1 L, 1 m³ = 1 000 L.
 - **Inclinar** (Princípio de Cavalieri): as camadas deslizam como uma pilha de moedas; a altura continua perpendicular às bases e o volume não muda.
-- **Descobrir**: o volume, a **altura** (*h* = *V* ÷ *A*<sub>base</sub>) ou a **aresta/raio** (raiz quadrada da área da base, raiz cúbica no cubo), como na piscina da Atividade 2.
+- **Descobrir**: o volume ou **qualquer medida** do sólido: a altura (*h* = *V* ÷ *A*<sub>base</sub>), a aresta ou o raio (raiz quadrada da área da base, raiz cúbica no cubo, como na piscina da Atividade 2), o comprimento ou a largura, um dos catetos, o lado do hexágono.
+- **Do prisma ao cilindro** (Atividade 7): um prisma de base hexagonal dentro do cilindro ganha lados (6 → 24 → círculo) até virar o cilindro; por isso *V* = *A*<sub>base</sub> · *h* também vale para ele.
+- **Cenas do livro**: nas atividades, a situação aparece primeiro (aquário com areia, plantas e peixes; piscina enterrada com deck e escada; caixa de chocolate; presente com fita; tanque de gás sobre apoios) e se dissolve no sólido. Enquanto a cena está na tela, a figura não gira; ela volta na **Resposta**.
+- **Modo mistério** (chip *Mistério*): as medidas aparecem como **?** e são reveladas ao tocar.
+- **Nível Ensino médio** (painel do professor): passos extras com a **diagonal do paralelepípedo** (Pitágoras duas vezes) e o enunciado do Princípio de Cavalieri.
+- No **cilindro deitado**, a água sobe de verdade (o corte é um segmento circular).
 - π pode valer **3,14**, **3** ou ficar **indicado** (100π), no painel do professor.
 
 ### Atividades do livro prontas
@@ -49,7 +54,7 @@ As **bandeirinhas** da Atividade 5 e do *Organizando as ideias*: uma figura plan
 
 - Retângulo → **cilindro**; triângulo retângulo → **cone** (com altura, raio e **geratriz**); semicírculo → **esfera**; bandeira azul (retângulo com meia-lua) → **esfera achatada**.
 - Para explorar: trapézio → **tronco de cone**; triângulo com um lado no palito → **dois cones**; retângulo longe do palito → **cilindro oco** (cano); círculo longe do palito → **toro** (rosquinha).
-- **Votação**: antes de girar, a turma escolhe que sólido vai aparecer; o resultado e o placar aparecem no último passo, com exemplos do dia a dia.
+- **Votação**: antes de girar, a turma escolhe que sólido vai aparecer; o resultado e o placar aparecem no último passo, com exemplos do dia a dia. O placar vai junto no link e nos cenários salvos.
 
 ## Planificação (Fase 2)
 
@@ -64,7 +69,7 @@ O sólido **abre um movimento por clique**, como uma caixa de papelão: as faces
 - **1 L = 1 dm³**: o cubinho de 1 cm³ (1 mL) vira fileira (10), placa (100) e o cubo de 1 dm (1 000 cm³), que **enche de água**: 1 L. Depois, o cubo de 1 m com 1 000 litros.
 - **Escada de unidades** kL, hL, daL, L, dL, cL, mL: o valor desce (×10) ou sobe (÷10) **um degrau por clique**, com m³, dm³ e cm³ embaixo de kL, L e mL.
 - **Latas (Atividade 9)**: volume de cada lata (diâmetro → raio), capacidade em mL; 350 mL de suco em cada uma (as pequenas **transbordam**), a linha dos 10% de folga e a lata mais apropriada (392,5 mL). Suco e folga editáveis.
-- **Cisternas (Atividade 10)**: volume, capacidade em litros, consumo da família (5 pessoas × 154 L) e **quantos dias** de água cada uma garante, com uma pessoa de 1,70 m para comparar. Pessoas e consumo editáveis.
+- **Cisternas (Atividade 10)**: volume, capacidade em litros, consumo da família (5 pessoas × 154 L) e **quantos dias** de água cada uma garante, com uma pessoa de 1,70 m para comparar; depois, **e se economizar?** (o consumo da OMS, 110 L) e os dias aumentam. Pessoas e consumo editáveis.
 
 ## Projeções e vistas (Fase 3)
 
@@ -86,6 +91,7 @@ Placar por **equipes** (2 a 4, nomes editáveis, ± pontos, ★ para quem lidera
   - Resolução **um passo por clique**: dados → fórmula → substituir → calcular → resposta (a figura mostra o valor encontrado). **Copiar enunciado** e **Abrir na aba** (a mesma situação no Volume, na Planificação ou na Capacidade).
 - **Qual é a vista?**: uma pilha de cubos sorteada e quatro figuras; qual é a vista frontal, superior ou lateral pedida? Ao acertar, a câmera gira até aquela vista.
 - **Que sólido gira?**: dada a bandeirinha, que sólido ela forma; ou dado o sólido, qual bandeirinha o forma.
+- **Prisma ou redondo?** (Atividade 6 e *Trocando ideias*): construções do livro (Torre Westhafen, Globo Ericsson, Museu Bundeskunsthalle) e objetos do dia a dia; a turma escolhe *prisma*, *corpo redondo* ou *nenhum dos dois* (a pirâmide). Depois da resposta, o corpo redondo **rola** pela mesa; nos prismas aparecem faces, arestas e vértices.
 
 ## Minha caixa (Fase 4: O que sei agora)
 

@@ -64,18 +64,20 @@
   ];
   GE.REV_SHAPES = SHAPES;
 
-  const DEF = { shape: 'ret', step: 0 };
+  const DEF = { shape: 'ret', step: 0, ok: 0, n: 0, done: [] };
   const S = () => GE.state.rev;
   function sanitize(o) {
     if (!SHAPES.some((x) => x.id === o.shape)) o.shape = 'ret';
     o.step = Math.max(0, Math.round(Number(o.step) || 0));
+    o.ok = Math.max(0, Math.round(Number(o.ok) || 0));
+    o.n = Math.max(o.ok, Math.round(Number(o.n) || 0));
+    o.done = Array.isArray(o.done) ? o.done.filter((x) => SHAPES.some((y) => y.id === x)) : [];
     return o;
   }
   const shape = () => SHAPES.find((x) => x.id === S().shape);
 
   let vote = null;          // palpite da turma nesta bandeira
-  const score = { ok: 0, n: 0 };
-  let scored = {};
+  // placar da votação: fica no estado (vai junto no link e nos cenários salvos)
 
   const B = { ang: 0, flagA: 1, solidA: 0.55, lab: 0, trail: 0, done: 0 };
   const sc = (p) => Object.assign({}, B, p);
@@ -197,7 +199,8 @@
     document.querySelectorAll('#rev-shapes [data-sh]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.sh === sh.id));
     $('rev-name').textContent = sh.flag;
     $('rev-vote').innerHTML = sh.opts.map((o) => '<button class="vote" data-o="' + esc(o) + '" aria-pressed="' + (vote === o) + '">' + esc(o) + '</button>').join('');
-    $('rev-score').innerHTML = score.n ? 'Placar da turma: <b>' + score.ok + '</b> acerto' + (score.ok === 1 ? '' : 's') + ' em ' + score.n + ' bandeira' + (score.n === 1 ? '' : 's') + '.' : 'O resultado aparece no último passo.';
+    const o = S();
+    $('rev-score').innerHTML = o.n ? 'Placar da turma: <b>' + o.ok + '</b> acerto' + (o.ok === 1 ? '' : 's') + ' em ' + o.n + ' bandeira' + (o.n === 1 ? '' : 's') + '. <button class="linkbtn" id="rev-zero">Zerar</button>' : 'O resultado aparece no último passo.';
   }
   function thumb(x) {
     const prof = x.prof();
@@ -219,10 +222,9 @@
         getIndex: () => S().step,
         setIndex: (i) => {
           GE.set({ rev: Object.assign({}, S(), { step: i }) }, { quiet: true });
-          if (i === steps().length - 1 && vote && !scored[S().shape]) {
-            scored[S().shape] = true;
-            score.n++;
-            if (vote === shape().solid) score.ok++;
+          const o = S();
+          if (i === steps().length - 1 && vote && !o.done.includes(o.shape)) {
+            GE.set({ rev: Object.assign({}, o, { done: o.done.concat([o.shape]), n: o.n + 1, ok: o.ok + (vote === shape().solid ? 1 : 0) }) }, { quiet: true });
             renderCards();
           }
         },
@@ -233,8 +235,12 @@
         const b = e.target.closest('[data-sh]');
         if (!b) return;
         vote = null;
-        delete scored[b.dataset.sh];
+        const o = S();
+        if (o.done.includes(b.dataset.sh)) GE.set({ rev: Object.assign({}, o, { done: o.done.filter((x) => x !== b.dataset.sh) }) }, { quiet: true });
         GE.patch('rev', { shape: b.dataset.sh, step: 0 });
+      });
+      $('rev-score').addEventListener('click', (e) => {
+        if (e.target.id === 'rev-zero') { GE.set({ rev: Object.assign({}, S(), { ok: 0, n: 0, done: [] }) }, { quiet: true }); renderCards(); }
       });
       $('rev-vote').addEventListener('click', (e) => {
         const b = e.target.closest('[data-o]');

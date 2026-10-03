@@ -86,7 +86,7 @@
     return out;
   }
   function stepsCist(o) {
-    const sc = (p) => Object.assign({ tags: 0, water: 0, liters: 0, days: 0, hi: -1 }, p);
+    const sc = (p) => Object.assign({ tags: 0, water: 0, liters: 0, days: 0, hi: -1, econ: 0 }, p);
     const V = CIST.map((c) => volCyl(c.d, c.h));
     const R2 = (v) => Math.round(v * 100) / 100; // o livro usa duas casas
     const out = [];
@@ -99,7 +99,9 @@
     const day = o.people * o.perDay;
     out.push({ title: 'Consumo da família', body: '<p>Cada pessoa gasta, em média, ' + F(o.perDay) + ' L de água por dia (40% a mais do que recomenda a OMS).</p>' + ml(F(o.people, 0) + ' · ' + F(o.perDay) + ' = ' + F(day) + ' L por dia'), scene: sc({ tags: 3, water: 1, liters: 1 }) });
     out.push({ title: 'Quantos dias?', body: V.map((v, i) => ml('Cisterna ' + (i + 1) + ': ' + F(R2(v) * 1000, 0) + ' ÷ ' + F(day) + ' ≈ ' + F(R2(v) * 1000 / day, 1) + ' dias')).join('') + '<p>Cada quadradinho embaixo das cisternas é um dia de água para a família.</p>', scene: sc({ tags: 3, water: 1, liters: 1, days: 1 }), dur: 1600 });
-    out.push({ title: 'Para debater', body: '<p>O que cada um pode fazer no dia a dia para diminuir o consumo de água em casa?</p><p class="note">Sugestão do livro: a animação <i>Calango Lengo: morte e vida sem ver água</i> e a canção “Asa branca”.</p>', scene: sc({ tags: 3, water: 1, liters: 1, days: 1 }) });
+    const eco = o.perDay / 1.4;
+    out.push({ title: 'E se economizar?', body: '<p>Se cada pessoa gastasse o recomendado pela OMS (40% a menos que ' + F(o.perDay) + ' L), seriam cerca de ' + F(eco, 0) + ' L por pessoa por dia:</p>' + ml(F(o.people, 0) + ' · ' + F(eco, 0) + ' = ' + F(o.people * eco, 0) + ' L por dia') + V.map((v, i) => ml('Cisterna ' + (i + 1) + ': ≈ ' + F(R2(v) * 1000 / (o.people * eco), 1) + ' dias')).join('') + '<p>A mesma água dura mais dias.</p>', scene: sc({ tags: 3, water: 1, liters: 1, days: 1, econ: 1 }), dur: 1400 });
+    out.push({ title: 'Para debater', body: '<p>O que cada um pode fazer no dia a dia para diminuir o consumo de água em casa?</p><p class="note">Sugestão do livro: a animação <i>Calango Lengo: morte e vida sem ver água</i> e a canção “Asa branca”.</p>', scene: sc({ tags: 3, water: 1, liters: 1, days: 1, econ: 1 }) });
     return out;
   }
 
@@ -271,7 +273,7 @@
     const cam = G.cam(view.apply({ s: 88, cx: 500, cy: 300, center: [0, 1.4, 0] }));
     const V = CIST.map((c) => volCyl(c.d, c.h));
     const R2 = (v) => Math.round(v * 100) / 100;
-    const day = o.people * o.perDay;
+    const day = o.people * GE.lerp(o.perDay, o.perDay / 1.4, s.econ || 0);
     out += '<ellipse class="shadow3" cx="500" cy="' + G.f1(cam.p([0, 0, 0])[1] + 10) + '" rx="440" ry="42"/>';
     items.forEach((c, i) => {
       if (c.person) { out += person(cam, xs[i]); return; }

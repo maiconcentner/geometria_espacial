@@ -705,3 +705,9 @@ canvas.annot {
 .sc-ribbon { stroke: #f2c94c; stroke-width: 6; stroke-linecap: round; }
 .sc-bow { fill: #f2c94c; stroke: #c9a227; stroke-width: 1.4; }
 .stage .sc-gas { font-family: var(--font-display); font-size: 30px; font-weight: 700; fill: #c0392b; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0.12em; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 700; text-decoration: underline; }
+.opt-row.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.opt-row.three .opt { min-height: 80px; }
+.table3 { fill: #d9c3a0; stroke: #a88b62; stroke-width: 1.2; }
+.stage .obj-name { font-family: var(--font-display); font-size: 22px; fill: var(--accent); }
+#game-g { flex-wrap: wrap; }

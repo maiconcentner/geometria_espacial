@@ -247,7 +247,7 @@
     });
     if (isCyl && o.ask === 'V' && !o.lying) {
       out.push({ title: 'Do prisma ao cilindro', tag: 'Atividade 7', body: '<p>Dentro do cilindro cabe um prisma de base hexagonal. Já sabemos o volume dele: área da base vezes altura.</p>', scene: sc({ ng: 6, rev: 1 }), dur: 1200 });
-      out.push({ title: 'Mais lados', body: '<p>Com 12, 24, 48 lados na base, o prisma vai ficando cada vez mais parecido com o cilindro.</p>', scene: sc({ ng: 36, rev: 1 }), dur: 2200 });
+      out.push({ title: 'Mais lados', body: '<p>Com 12, 24, 48 lados na base, o prisma vai ficando cada vez mais parecido com o cilindro.</p>', scene: sc({ ng: 24, rev: 1 }), dur: 2200 });
       out.push({ title: 'O cilindro', body: '<p>Com lados cada vez menores, a base vira o círculo. Por isso o volume do cilindro também é <b>área da base × altura</b>, e a área da base é a do círculo, π' + I('r') + '².</p>' + ml(I('V') + ' = ' + Ab + ' · ' + I('h') + ' = π · ' + I('r') + '² · ' + I('h')), scene: sc({ ng: 72, rev: 1 }), dur: 1200 });
     }
 
@@ -381,7 +381,7 @@
     const shMax = o.obl && !lying ? 0.5 * H : 0;
     const sh = s.shear * shMax;
     const T = lying ? (p) => [p[1] - H / 2, d.r - p[0], p[2]] : (p) => p;
-    const full = G.xform(G.prism(base, H, [sh, 0], { smooth }), T);
+    const full = G.xform(G.prism(base, H, [sh, 0], { smooth, featureAngle: ngon ? 2 : undefined }), T);
     const R = Math.sqrt(rb * rb + (H / 2) * (H / 2)) + shMax / 2;
     const scale = ((opt.size || 170) / R) * GE.lerp(1, 0.78, s.inset);
     const cx = GE.lerp(opt.cx || 500, 300, s.inset);
@@ -398,7 +398,7 @@
     let out = '';
     const hid = GE.state.hidden;
     const hp = Math.max(1e-6, s.fill * H);
-    const part = s.fill > 0.004 ? G.xform(G.prism(base, hp, [sh * hp / H, 0], { smooth }), T) : null;
+    const part = s.fill > 0.004 ? G.xform(G.prism(base, hp, [sh * hp / H, 0], { smooth, featureAngle: ngon ? 2 : undefined }), T) : null;
 
     // chão (sombra)
     {
