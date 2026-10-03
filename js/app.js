@@ -14,6 +14,7 @@
       if (t) t.setAttribute('aria-selected', S.view === v);
     });
     segSync('seg-pi', S.pi);
+    segSync('seg-level', S.level);
     segSync('seg-dec', String(S.dec));
     segSync('seg-theme', S.theme);
     segSync('seg-speed', String(S.speed));
@@ -45,6 +46,7 @@
     $('panel-close').addEventListener('click', () => { openPanel(false); $('btn-panel').focus(); });
     $('scrim').addEventListener('click', () => openPanel(false));
     segBind('seg-pi', (v) => GE.set({ pi: v }));
+    segBind('seg-level', (v) => GE.set({ level: v }));
     segBind('seg-dec', (v) => GE.set({ dec: Number(v) }));
     segBind('seg-theme', (v) => GE.set({ theme: v }));
     segBind('seg-speed', (v) => GE.set({ speed: Number(v) }));

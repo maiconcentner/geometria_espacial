@@ -29,26 +29,26 @@
 
   /* Atividades do livro (Capítulo 9) */
   const BOOK = [
-    { id: 'a1d', book: 'Atividade 1d', solid: 'cubo', d: { a: 30 }, unit: 'cm', ask: 'V', cap: true,
+    { id: 'a1d', scene: 'aquario', book: 'Atividade 1d', solid: 'cubo', d: { a: 30 }, unit: 'cm', ask: 'V', cap: true,
       text: 'O primeiro aquário de Leonardo é um cubo com 30 cm de aresta. Qual é o volume de água, em cm³, para enchê-lo completamente?' },
-    { id: 'a1e', book: 'Atividade 1e', solid: 'para', d: { c: 40, L: 20, h: 40 }, unit: 'cm', ask: 'V', cap: true,
+    { id: 'a1e', scene: 'aquario', book: 'Atividade 1e', solid: 'para', d: { c: 40, L: 20, h: 40 }, unit: 'cm', ask: 'V', cap: true,
       text: 'O segundo aquário tem 20 cm de largura, 40 cm de comprimento e 40 cm de altura. Qual é o volume de água, em cm³, para enchê-lo completamente?' },
-    { id: 'a2', book: 'Atividade 2', solid: 'quad', d: { a: 25, h: 5 }, unit: 'm', ask: 'a', cap: false,
+    { id: 'a2', scene: 'piscina', book: 'Atividade 2', solid: 'quad', d: { a: 25, h: 5 }, unit: 'm', ask: 'a', cap: false,
       text: 'Uma piscina tem volume igual a 3 125 m³. Ela tem formato de prisma de base quadrada e altura de 5 m. Qual é a medida da aresta da base?' },
-    { id: 'a3', book: 'Atividade 3', solid: 'tri', d: { b: 6, c: 8, h: 10 }, unit: 'cm', ask: 'V', cap: false,
+    { id: 'a3', scene: 'choco', book: 'Atividade 3', solid: 'tri', d: { b: 6, c: 8, h: 10 }, unit: 'cm', ask: 'V', cap: false,
       text: 'Uma caixa de chocolate tem formato de prisma triangular. A base é um triângulo retângulo de catetos 6 cm e 8 cm, e a aresta lateral mede 10 cm. Qual é o volume da caixa, em cm³?' },
-    { id: 'a4', book: 'Atividade 4', solid: 'hex', d: { L: 4, h: 12 }, unit: 'cm', ask: 'V', cap: false,
+    { id: 'a4', scene: 'presente', book: 'Atividade 4', solid: 'hex', d: { L: 4, h: 12 }, unit: 'cm', ask: 'V', cap: false,
       text: 'Talita quer construir uma embalagem de presente em forma de prisma, com 12 cm de altura e base hexagonal regular de lado 4 cm. Qual será o volume da embalagem?' },
-    { id: 'a7', book: 'Atividade 7d', solid: 'cil', d: { r: 10, h: 30 }, unit: 'cm', ask: 'V', cap: true, pi: '3.14',
+    { id: 'a7', scene: 'aquario', book: 'Atividade 7d', solid: 'cil', d: { r: 10, h: 30 }, unit: 'cm', ask: 'V', cap: true, pi: '3.14',
       text: 'O novo aquário de Leonardo é um cilindro com 30 cm de altura e base de 10 cm de raio. Que volume de água enche o aquário completamente? Considere π = 3,14.' },
-    { id: 'a8', book: 'Atividade 8', solid: 'cil', d: { r: 2.5, h: 20 }, unit: 'm', ask: 'V', cap: true, pi: '3.14', lying: true, diam: 5, botijao: 13,
+    { id: 'a8', scene: 'gas', book: 'Atividade 8', solid: 'cil', d: { r: 2.5, h: 20 }, unit: 'm', ask: 'V', cap: true, pi: '3.14', lying: true, diam: 5, botijao: 13,
       text: 'O reservatório de uma distribuidora de gás é um cilindro deitado, com 20 m de comprimento e base de 5 m de diâmetro. Qual é o volume do reservatório? A capacidade total equivale a quantos botijões de 13 L? (1 m³ = 1 000 L)' },
   ];
   GE.VOL_BOOK = BOOK;
 
   const DEF = {
     solid: 'para', d: { a: 30, c: 40, L: 20, h: 40, b: 6, r: 10 }, unit: 'cm',
-    ask: 'V', cap: true, obl: false, lying: false, q: '', step: 0, grid: true, lab: true,
+    ask: 'V', cap: true, obl: false, lying: false, q: '', step: 0, grid: true, lab: true, myst: false,
   };
 
   function S() { return GE.state.vol; }
@@ -58,9 +58,10 @@
     Object.keys(DEF.d).forEach((k) => { d[k] = GE.num(d[k], DEF.d[k], 0.1, 10000); });
     o.d = d;
     if (!['cm', 'dm', 'm'].includes(o.unit)) o.unit = 'cm';
-    if (!['V', 'h', 'a'].includes(o.ask)) o.ask = 'V';
-    if (o.ask === 'a' && !['cubo', 'quad', 'cil'].includes(o.solid)) o.ask = 'V';
-    if (o.ask === 'h' && o.solid === 'cubo') o.ask = 'V';
+    // descobrir: o volume ou qualquer medida do sólido ("a" no cilindro é o raio)
+    if (o.ask === 'a' && o.solid === 'cil') o.ask = 'r';
+    if (!['V'].concat(SOLIDS[o.solid].dims).includes(o.ask)) o.ask = 'V';
+    o.myst = !!o.myst;
     o.cap = !!o.cap; o.obl = !!o.obl; o.lying = !!o.lying && o.solid === 'cil';
     o.grid = o.grid !== false; o.lab = o.lab !== false;
     if (!BOOK.some((b) => b.id === o.q)) o.q = '';
@@ -202,7 +203,7 @@
   }
   function insetKind(o) { return SOLIDS[o.solid].base; }
 
-  const B = { fill: 1, ghost: 0, baseHi: 0, tint: 0, grid: 0, inset: 0, ia: 0, glass: 0, water: 0, shear: 0, hl: 0, ans: 0, rev: 0 };
+  const B = { fill: 1, ghost: 0, baseHi: 0, tint: 0, grid: 0, inset: 0, ia: 0, glass: 0, water: 0, shear: 0, hl: 0, ans: 0, rev: 0, ng: 72, diag: 0, ctx: 0 };
   const sc = (p) => Object.assign({}, B, p);
 
   function steps() {
@@ -228,8 +229,13 @@
     let intro;
     if (o.ask === 'V') intro = '<p>' + (isCyl ? 'O cilindro tem duas bases que são círculos iguais e paralelos, ligadas por uma superfície curva.' : 'Todo prisma tem duas <b>bases</b> iguais (congruentes) e paralelas, e faces laterais que são paralelogramos.') + '</p>';
     else if (o.ask === 'h') intro = '<p>Sabemos o volume, ' + I('V') + ' = ' + F(Vn) + ' ' + u3() + ', e as medidas da base. Falta a <b>altura</b>.</p>';
-    else intro = '<p>Sabemos o volume, ' + I('V') + ' = ' + F(Vn) + ' ' + u3() + (o.solid === 'cubo' ? '' : ', e a altura, ' + I('h') + ' = ' + F(H) + ' ' + u) + '. Falta ' + (isCyl ? 'o <b>raio</b> da base' : o.solid === 'cubo' ? 'a <b>aresta</b>' : 'a <b>aresta da base</b>') + '.</p>';
-    out.push({ title: def.name, tag: def.desc, body: qTxt + (q ? '' : intro) + (q ? intro : ''), scene: sc({ rev: 1 }) });
+    else if (o.ask === 'a' || o.ask === 'r') intro = '<p>Sabemos o volume, ' + I('V') + ' = ' + F(Vn) + ' ' + u3() + (o.solid === 'cubo' ? '' : ', e a altura, ' + I('h') + ' = ' + F(H) + ' ' + u) + '. Falta ' + (isCyl ? 'o <b>raio</b> da base' : o.solid === 'cubo' ? 'a <b>aresta</b>' : 'a <b>aresta da base</b>') + '.</p>';
+    else intro = '<p>Sabemos o volume, ' + I('V') + ' = ' + F(Vn) + ' ' + u3() + ', e as outras medidas. Falta o(a) <b>' + dimName(o.solid, o.ask) + '</b> (' + I(o.ask) + ').</p>';
+    // cena do livro: a situação aparece primeiro e depois se dissolve no sólido
+    const aq = q && q.scene === 'aquario';
+    const sceneOn = (p) => sc(Object.assign({ ctx: 1, rev: 1 }, aq ? { glass: 1, water: 0.9 } : {}, p || {}));
+    if (q && q.scene) out.push({ title: 'A situação', tag: q.book, body: qTxt + '<p>Que sólido geométrico está escondido nesta situação?</p>', scene: sceneOn() });
+    out.push({ title: def.name, tag: def.desc, body: (q && q.scene ? '' : qTxt) + intro, scene: sc({ rev: 1 }), dur: q && q.scene ? 1300 : undefined });
     if (q && q.diam) {
       out.push({ title: 'Do diâmetro para o raio', body: '<p>O enunciado dá o <b>diâmetro</b> da base. O raio é a metade:</p>' + ml(I('r') + ' = ' + F(q.diam) + ' ÷ 2 = ' + F(d.r) + ' ' + u), scene: sc({ rev: 1 }) });
     }
@@ -239,8 +245,13 @@
       body: isCyl ? '<p>As bases são dois <b>círculos</b> de raio ' + I('r') + (o.ask === 'a' ? '' : ' = ' + F(d.r) + ' ' + u) + '.</p>' : '<p>As bases (em azul) são ' + (def.base === 'sq' ? 'quadrados' : def.base === 'rect' ? 'retângulos' : def.base === 'tri' ? 'triângulos retângulos' : 'hexágonos regulares') + ' iguais e paralelos. A <b>altura</b> é a distância entre elas.</p>',
       scene: sc({ baseHi: 1, rev: 1 }),
     });
+    if (isCyl && o.ask === 'V' && !o.lying) {
+      out.push({ title: 'Do prisma ao cilindro', tag: 'Atividade 7', body: '<p>Dentro do cilindro cabe um prisma de base hexagonal. Já sabemos o volume dele: área da base vezes altura.</p>', scene: sc({ ng: 6, rev: 1 }), dur: 1200 });
+      out.push({ title: 'Mais lados', body: '<p>Com 12, 24, 48 lados na base, o prisma vai ficando cada vez mais parecido com o cilindro.</p>', scene: sc({ ng: 36, rev: 1 }), dur: 2200 });
+      out.push({ title: 'O cilindro', body: '<p>Com lados cada vez menores, a base vira o círculo. Por isso o volume do cilindro também é <b>área da base × altura</b>, e a área da base é a do círculo, π' + I('r') + '².</p>' + ml(I('V') + ' = ' + Ab + ' · ' + I('h') + ' = π · ' + I('r') + '² · ' + I('h')), scene: sc({ ng: 72, rev: 1 }), dur: 1200 });
+    }
 
-    if (o.ask === 'a') {
+    if (o.ask === 'a' || o.ask === 'r') {
       // ----- Descobrir a aresta (ou o raio) -----
       if (o.solid === 'cubo') {
         out.push({ title: 'Montar a equação', body: '<p>No cubo, as três medidas são iguais à aresta ' + I('a') + ':</p>' + ml(I('V') + ' = ' + I('a') + ' · ' + I('a') + ' · ' + I('a') + ' = ' + I('a') + '³') + ml(I('a') + '³ = ' + F(Vn)), scene: sc({ baseHi: 0, rev: 1 }) });
@@ -255,6 +266,22 @@
         }
         out.push({ title: 'Conferir', body: ml(I('V') + ' = ' + Ab + ' · ' + I('h') + ' = ' + F(An) + ' · ' + F(H) + ' = ' + F(Vn) + ' ' + u3()), scene: sc({ ans: 1, grid, rev: 1 }) });
       }
+    } else if (o.ask !== 'V' && o.ask !== 'h') {
+      // ----- Descobrir uma medida da base -----
+      const k = o.ask, kv = d[k];
+      out.push({ title: 'Área da base', body: '<p>Do volume e da altura, tiramos a área da base:</p>' + ml(I('V') + ' = ' + Ab + ' · ' + I('h')) + ml(F(Vn) + ' = ' + Ab + ' · ' + F(H)) + ml(Ab + ' = ' + F(Vn) + ' ÷ ' + F(H) + ' ' + GE.eqs(An) + ' ' + F(An) + ' ' + u2()), scene: sc({ fill: 0, ghost: 1, baseHi: 1, rev: 1 }) });
+      let b2;
+      if (def.base === 'rect') {
+        const ot = k === 'c' ? 'L' : 'c';
+        b2 = '<p>A base é um retângulo: ' + Ab + ' = ' + I('c') + ' · ' + I('L') + '.</p>' + ml(F(An) + ' = ' + (k === 'c' ? I('c') + ' · ' + F(d.L) : F(d.c) + ' · ' + I('L'))) + ml(I(k) + ' = ' + F(An) + ' ÷ ' + F(d[ot]) + ' = ' + F(kv) + ' ' + u);
+      } else if (def.base === 'tri') {
+        const ot = k === 'b' ? 'c' : 'b';
+        b2 = '<p>A base é um triângulo retângulo: ' + Ab + ' = ' + I('b') + ' · ' + I('c') + ' ÷ 2.</p>' + ml(F(An) + ' = ' + (k === 'b' ? I('b') + ' · ' + F(d.c) : F(d.b) + ' · ' + I('c')) + ' ÷ 2') + ml(I(k) + ' = 2 · ' + F(An) + ' ÷ ' + F(d[ot]) + ' = ' + F(kv) + ' ' + u);
+      } else {
+        b2 = '<p>A base é um hexágono regular (6 triângulos equiláteros): ' + Ab + ' = 6 · ' + I('L') + '²√3/4 = 1,5√3 · ' + I('L') + '².</p>' + ml(I('L') + '² = ' + F(An) + ' ÷ (1,5 · √3) ' + GE.eqs(kv * kv) + ' ' + F(kv * kv)) + ml(I('L') + ' = √' + F(kv * kv) + ' ' + GE.eqs(kv) + ' ' + F(kv) + ' ' + u);
+      }
+      out.push({ title: 'Da área para a medida', body: b2, scene: sc({ fill: 1, ans: 1, grid, rev: 1 }), dur: 1300 });
+      out.push({ title: 'Conferir', body: ml(I('V') + ' = ' + F(An) + ' · ' + F(H) + ' ' + GE.eqs(Vn) + ' ' + F(Vn) + ' ' + u3()), scene: sc({ ans: 1, grid, rev: 1 }) });
     } else {
       // ----- Área da base -----
       out.push({
@@ -287,6 +314,12 @@
             ml(I('V') + ' = ' + symTxt(A.k, A.sym) + ' · ' + F(H) + ' = ' + symTxt(V.k, V.sym) + tail(V) + ' ' + u3()),
           scene: sc({ fill: 1, grid, rev: 1 }),
         });
+        if (GE.state.level === 'EM' && (def.base === 'sq' || def.base === 'rect')) {
+          const c = def.base === 'sq' ? d.a : d.c, L = def.base === 'sq' ? d.a : d.L;
+          const db = Math.hypot(c, L), D = Math.hypot(c, L, H);
+          out.push({ title: 'Diagonal da base', tag: 'EM', body: '<p>Na base, a diagonal é a hipotenusa de um triângulo retângulo de catetos ' + I('c') + ' e ' + I('L') + ':</p>' + ml(I('d') + '² = ' + F(c) + '² + ' + F(L) + '² → ' + I('d') + ' = √' + F(c * c + L * L) + ' ' + GE.eqs(db) + ' ' + F(db) + ' ' + u), scene: sc({ fill: 1, diag: 0.5, rev: 1 }), dur: 1100 });
+          out.push({ title: 'Diagonal do sólido', tag: 'EM', body: '<p>Agora outro triângulo retângulo, em pé: catetos ' + I('d') + ' e ' + I('h') + '.</p>' + ml(I('D') + '² = ' + I('d') + '² + ' + I('h') + '² = ' + I('c') + '² + ' + I('L') + '² + ' + I('h') + '²') + ml(I('D') + ' = √(' + F(c) + '² + ' + F(L) + '² + ' + F(H) + '²) = √' + F(c * c + L * L + H * H) + ' ' + GE.eqs(D) + ' ' + F(D) + ' ' + u), scene: sc({ fill: 1, diag: 1, rev: 1 }), dur: 1100 });
+        }
       } else {
         // ----- Descobrir a altura -----
         out.push({ title: 'Montar a equação', body: ml(I('V') + ' = ' + Ab + ' · ' + I('h')) + ml(F(Vn) + ' = ' + F(An) + ' · ' + I('h')), scene: sc({ fill: 0, ghost: 1, inset: 1, ia: nA, baseHi: 1, rev: 1 }) });
@@ -306,22 +339,24 @@
       out.push({
         title: 'Inclinar: o volume muda?',
         body: '<p>Empurrando as camadas para o lado, como uma pilha de moedas, o sólido fica <b>oblíquo</b>. Cada camada continua com a mesma área e a pilha continua com a mesma altura ' + I('h') + ' (medida na perpendicular às bases).</p>' +
-          '<p><b>Princípio de Cavalieri:</b> o volume não muda.</p>' + ml(I('V') + ' = ' + Ab + ' · ' + I('h') + ' = ' + F(Vn) + ' ' + u3()),
+          '<p><b>Princípio de Cavalieri:</b> o volume não muda.</p>' + (GE.state.level === 'EM' ? '<p class="note">Enunciado: se dois sólidos de mesma altura, apoiados no mesmo plano, têm secções de mesma área em qualquer nível, então têm o mesmo volume.</p>' : '') + ml(I('V') + ' = ' + Ab + ' · ' + I('h') + ' = ' + F(Vn) + ' ' + u3()),
         scene: sc({ fill: 1, grid, shear: 1, hl: 1, ans: 1, rev: 1 }),
         dur: 1400,
       });
     }
     if (q) {
       let ans;
-      if (o.ask === 'a') ans = (isCyl ? 'O raio da base mede ' : o.solid === 'cubo' ? 'A aresta mede ' : 'A aresta da base mede ') + '<b>' + F(isCyl ? d.r : d.a) + ' ' + u + '</b>.';
+      if (o.ask === 'a' || o.ask === 'r') ans = (isCyl ? 'O raio da base mede ' : o.solid === 'cubo' ? 'A aresta mede ' : 'A aresta da base mede ') + '<b>' + F(isCyl ? d.r : d.a) + ' ' + u + '</b>.';
       else if (o.ask === 'h') ans = 'A altura mede <b>' + F(H) + ' ' + u + '</b>.';
+      else if (o.ask !== 'V') ans = 'O(A) ' + dimName(o.solid, o.ask) + ' mede <b>' + F(d[o.ask]) + ' ' + u + '</b>.';
       else {
         ans = 'O volume é <b>' + symTxt(V.k, V.sym) + (V.sym ? ' ' + GE.eqs(Vn) + ' ' + F(Vn) : '') + ' ' + u3() + '</b>';
         if (o.cap) ans += ', ou seja, ' + (u === 'cm' ? F(Vn) + ' mL' + (Vn >= 1000 ? ' = ' + F(Vn / 1000) + ' L' : '') : F(capL(Vn)) + ' L');
         if (q.botijao) ans += ', o equivalente a cerca de ' + F(Math.floor(capL(Vn) / q.botijao), 0) + ' botijões';
         ans += '.';
       }
-      out.push({ title: 'Resposta', body: qTxt + '<p class="answer">' + ans + '</p>', scene: sc({ ans: 1, grid: 0, rev: 1, glass: o.cap ? 1 : 0, water: o.cap ? 1 : 0 }) });
+      const rs = q.scene ? sceneOn({ ans: 1 }) : sc({ ans: 1, grid: 0, rev: 1, glass: o.cap ? 1 : 0, water: o.cap ? 1 : 0 });
+      out.push({ title: 'Resposta', body: qTxt + '<p class="answer">' + ans + '</p>', scene: rs, dur: 1300 });
     }
     return out;
   }
@@ -337,21 +372,33 @@
     const d = dims(o);
     const def = SOLIDS[o.solid];
     const H = d.h;
-    const base = basePoly(o, d);
+    // do prisma ao cilindro: com ng < 72, a base do "cilindro" é um polígono regular
+    const ngon = def.base === 'circ' && s.ng < 71.5 ? Math.max(3, Math.round(s.ng)) : 0;
+    const base = ngon ? G.circlePts(d.r, ngon, Math.PI / ngon) : basePoly(o, d);
+    const smooth = def.base === 'circ' && !ngon;
     const rb = baseRadius(base);
     const lying = o.lying;
     const shMax = o.obl && !lying ? 0.5 * H : 0;
     const sh = s.shear * shMax;
     const T = lying ? (p) => [p[1] - H / 2, d.r - p[0], p[2]] : (p) => p;
-    const full = G.xform(G.prism(base, H, [sh, 0], { smooth: def.base === 'circ' }), T);
+    const full = G.xform(G.prism(base, H, [sh, 0], { smooth }), T);
     const R = Math.sqrt(rb * rb + (H / 2) * (H / 2)) + shMax / 2;
     const scale = ((opt.size || 170) / R) * GE.lerp(1, 0.78, s.inset);
     const cx = GE.lerp(opt.cx || 500, 300, s.inset);
-    const cam = G.cam(view.apply({ s: scale, cx, cy: opt.cy || 275, center: T([sh / 2, H / 2, 0]) }));
+    const camOpt = { s: scale, cx, cy: opt.cy || 275, center: T([sh / 2, H / 2, 0]) };
+    if (s.ctx > 0.001) {
+      // a cena fica na posição real (a câmera volta para a vista padrão)
+      let dy = -32 - view.c.yaw;
+      while (dy > 180) dy -= 360;
+      while (dy < -180) dy += 360;
+      camOpt.yaw = view.c.yaw + dy * s.ctx;
+      camOpt.pitch = view.c.pitch + (26 - view.c.pitch) * s.ctx;
+    }
+    const cam = G.cam(view.apply(camOpt));
     let out = '';
     const hid = GE.state.hidden;
     const hp = Math.max(1e-6, s.fill * H);
-    const part = s.fill > 0.004 ? G.xform(G.prism(base, hp, [sh * hp / H, 0], { smooth: def.base === 'circ' }), T) : null;
+    const part = s.fill > 0.004 ? G.xform(G.prism(base, hp, [sh * hp / H, 0], { smooth }), T) : null;
 
     // chão (sombra)
     {
@@ -366,10 +413,9 @@
       out += back.faces;
       const lvl = Math.max(1e-6, s.water * H * 0.97);
       if (s.water > 0.002) {
-        const wm = lying
-          ? G.xform(G.prism(G.circlePts(d.r * 0.985, 72), H * 0.995, [0, 0], { smooth: true }), (p) => T([p[0], p[1] + H * 0.0025, p[2]]))
-          : G.xform(G.prism(base.map((p) => [p[0] * 0.985, p[1] * 0.985]), lvl, [sh * lvl / H, 0], { smooth: def.base === 'circ' }), T);
-        const wa = lying ? 0.75 * s.water : 0.72;
+        const wm = lying ? lyingWater(d, H, s.water, T)
+          : G.xform(G.prism(base.map((p) => [p[0] * 0.985, p[1] * 0.985]), lvl, [sh * lvl / H, 0], { smooth }), T);
+        const wa = 0.72;
         const wr = G.render(wm, cam, { colors: { '*': COL.water, top: '#6fb2ea' }, alpha: wa, edges: false });
         out += wr.faces;
       }
@@ -391,6 +437,12 @@
         if (s.grid > 0.01 && o.grid) out += '<g opacity="' + s.grid.toFixed(3) + '">' + gridLines(o, d, base, hp, sh * hp / H, T, cam, pr.NV) + '</g>';
         out += pr.edges;
       }
+      if (ngon) {
+        // o cilindro de verdade, tracejado em volta do prisma
+        const cyl = G.xform(G.prism(G.circlePts(d.r, 72), H, [sh, 0], { smooth: true }), T);
+        const gr = G.render(cyl, cam, { colors: () => null, hidden: true, edgeCls: 'edge-ghost', hiddenCls: 'edge-ghost' });
+        out += gr.hidden + gr.edges;
+      }
       if (s.baseHi > 0.01) {
         // base de baixo em azul, vista "através" do sólido
         const bp = base.map((p) => T([p[0], 0, p[1]]));
@@ -405,6 +457,20 @@
       out += '<g opacity="' + s.hl.toFixed(3) + '">' + G.line(cam, top, foot, 'hline') + G.dot(cam, top, 3.5, 'hdot') + G.dot(cam, foot, 3.5, 'hdot') +
         G.text(cam, [sh, H / 2, 0], labTxt('h', H, o, s), 'dim3 hlab', 12, 0, 'start') + '</g>';
     }
+    // diagonais (nível EM)
+    if (s.diag > 0.01 && !lying) {
+      const b0 = [base[0][0], 0, base[0][1]], b2 = [base[2][0], 0, base[2][1]], t2 = [base[2][0] + sh, H, base[2][1]];
+      const e1 = GE.seg(s.diag, 0, 0.5), e2 = GE.seg(s.diag, 0.5, 1);
+      out += G.line(cam, b0, G.lerp3(b0, b2, e1), 'diag-b');
+      if (e1 > 0.95) out += G.text(cam, G.lerp3(b0, b2, 0.5), '<tspan class="it">d</tspan>', 'dim3 diag-lab', 0, 16);
+      if (e2 > 0) {
+        out += G.line(cam, b2, G.lerp3(b2, t2, e2), 'diag-h') + G.line(cam, b0, G.lerp3(b0, t2, e2), 'diag-D');
+        if (e2 > 0.95) out += G.text(cam, G.lerp3(b0, t2, 0.5), '<tspan class="it">D</tspan>', 'dim3 diag-lab D', -14, -10);
+      }
+    }
+    // cena do livro (por cima, dissolvendo)
+    const scn = opt.scene || (BOOK.find((b) => b.id === o.q) || {}).scene;
+    if (s.ctx > 0.01 && scn) out += '<g opacity="' + s.ctx.toFixed(3) + '">' + sceneLayer(scn, { o, d, base, H, T, cam, scale, rb, full, s }) + '</g>';
     if (o.lab) out += labels(o, d, base, H, sh, T, cam, s);
 
     // área da base (figura plana ao lado)
@@ -412,9 +478,119 @@
     svg.innerHTML = out;
   }
 
+  /* Modo mistério: as medidas aparecem como "?" até alguém tocar nelas. */
+  const shown = new Set();
+  /* Água num cilindro deitado: o corte é um segmento circular que sobe com o nível. */
+  function lyingWater(d, H, w, T) {
+    const r = d.r * 0.985, hl = 2 * r * Math.min(1, w * 0.98);
+    const x0 = r - hl;                       // no prisma local, altura do mundo = r − x
+    const al = Math.acos(GE.clamp(x0 / r, -1, 1));
+    const pts = [];
+    const n = 48;
+    for (let i = 0; i <= n; i++) { const t = -al + (2 * al * i) / n; pts.push([r * Math.cos(t), -r * Math.sin(t)]); }
+    const m = G.prism(pts, H * 0.995, [0, 0], { smooth: true });
+    return G.xform(m, (p) => T([p[0] + (d.r - r), p[1] + H * 0.0025, p[2]]));
+  }
+
+  /* Cenas das atividades do livro, desenhadas sobre o sólido. */
+  function sceneLayer(kind, g) {
+    const { d, base, H, T, cam, scale, rb, full } = g;
+    const f1 = G.f1;
+    let out = '';
+    const P = (p) => cam.p(T(p));
+    if (kind === 'aquario') {
+      const sand = G.xform(G.prism(base.map((p) => [p[0] * 0.98, p[1] * 0.98]), H * 0.09, [0, 0], { smooth: g.o.solid === 'cil' }), T);
+      out += G.render(sand, cam, { colors: { '*': '#e6cf93', top: '#efdba6' }, edges: false }).faces;
+      // plantas
+      [[-0.55, 0.15], [0.45, -0.3], [-0.1, -0.5]].forEach((q, i) => {
+        const x = q[0] * rb, z = q[1] * rb;
+        let path = '';
+        for (let k = 0; k < 3; k++) {
+          const a = P([x + (k - 1) * rb * 0.05, H * 0.09, z]), b = P([x + (k - 1) * rb * 0.12 + Math.sin(i + k) * rb * 0.08, H * (0.45 + 0.1 * k), z]);
+          path += 'M' + f1(a[0]) + ' ' + f1(a[1]) + 'Q' + f1(a[0] + 12) + ' ' + f1((a[1] + b[1]) / 2) + ' ' + f1(b[0]) + ' ' + f1(b[1]);
+        }
+        out += '<path class="sc-plant" d="' + path + '"/>';
+      });
+      // peixes
+      [[-0.3, 0.6, 0.1, '#ff8c1a'], [0.35, 0.45, -0.15, '#f2c230'], [0.05, 0.75, 0.3, '#ff6b6b']].forEach((q, i) => {
+        const c = P([q[0] * rb, q[1] * H, q[2] * rb]);
+        const k = Math.max(7, rb * scale * 0.13), dir = i % 2 ? -1 : 1;
+        out += '<g class="sc-fish" transform="translate(' + f1(c[0]) + ' ' + f1(c[1]) + ') scale(' + dir + ' 1)">' +
+          '<path d="M' + f1(-k * 1.1) + ' 0l' + f1(-k * 0.7) + ' ' + f1(-k * 0.55) + 'v' + f1(k * 1.1) + 'Z" fill="' + q[3] + '"/>' +
+          '<ellipse rx="' + f1(k * 1.2) + '" ry="' + f1(k * 0.62) + '" fill="' + q[3] + '"/><circle cx="' + f1(k * 0.6) + '" cy="' + f1(-k * 0.12) + '" r="' + f1(k * 0.14) + '" fill="#1d2630"/></g>';
+      });
+      // bolhas
+      for (let i = 0; i < 4; i++) { const c = P([rb * 0.5, H * (0.5 + i * 0.1), rb * 0.2]); out += '<circle class="sc-bubble" cx="' + f1(c[0] + (i % 2) * 6) + '" cy="' + f1(c[1]) + '" r="' + (3 + i) + '"/>'; }
+    } else if (kind === 'piscina') {
+      // terreno em volta, paredes de dentro, água e escada
+      const k = 1.5;
+      const outer = base.map((p) => [p[0] * k, p[1] * k]);
+      const block = G.prism(outer, H);
+      out += G.render(block, cam, { colors: (f) => (f.part === 'top' ? null : '#a9805a'), edges: false }).faces;
+      out += G.render(full, cam, { side: 'back', colors: { '*': '#a6d9ee', base: '#8fcbe5' }, edges: false }).faces;
+      const lvl = H * 0.92;
+      out += '<path class="sc-pool" d="' + G.path(cam, base.map((p) => [p[0], lvl, p[1]]), true) + '"/>';
+      let ring = '';
+      for (let i = 0; i < base.length; i++) {
+        const j = (i + 1) % base.length;
+        ring += '<path class="sc-deck" d="' + G.path(cam, [[outer[i][0], H, outer[i][1]], [outer[j][0], H, outer[j][1]], [base[j][0], H, base[j][1]], [base[i][0], H, base[i][1]]], true) + '"/>';
+      }
+      out += ring;
+      const lx = base[1][0] - rb * 0.25, lz = base[1][1] + 0.001;
+      const rail = (x) => G.line(cam, [x, H * 1.12, lz], [x, H * 0.45, lz], 'sc-ladder');
+      out += rail(lx) + rail(lx - rb * 0.12);
+      for (let t = 0; t < 4; t++) { const y = H * (0.95 - t * 0.15); out += G.line(cam, [lx, y, lz], [lx - rb * 0.12, y, lz], 'sc-ladder'); }
+    } else if (kind === 'choco' || kind === 'presente') {
+      const choco = kind === 'choco';
+      const r = G.render(full, cam, { colors: choco ? { '*': '#6b3f25', top: '#7d4b2e' } : { '*': '#d64545', top: '#e25a5a' }, hidden: false });
+      out += r.faces + r.edges;
+      const NV = r.NV;
+      const n = base.length;
+      let best = -1, bz = 0;
+      for (let i = 0; i < n; i++) { const z = NV[2 + i][2]; if (z > bz) { bz = z; best = i; } }
+      if (choco && best >= 0) {
+        const a = base[best], b = base[(best + 1) % n];
+        const pt = (t, y) => [a[0] + (b[0] - a[0]) * t, y, a[1] + (b[1] - a[1]) * t];
+        out += '<path class="sc-label" d="' + G.path(cam, [pt(0.06, H * 0.36), pt(0.94, H * 0.36), pt(0.94, H * 0.64), pt(0.06, H * 0.64)], true) + '"/>';
+        out += G.text(cam, pt(0.5, H * 0.5), 'CHOCOLATE', 'sc-brand');
+      }
+      if (!choco) {
+        let rib = '';
+        for (let i = 0; i < n; i++) {
+          if (NV[2 + i][2] <= 0) continue;
+          const a = base[i], b = base[(i + 1) % n], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+          rib += G.line(cam, [m[0], 0, m[1]], [m[0], H, m[1]], 'sc-ribbon');
+        }
+        for (let i = 0; i < n / 2; i++) {
+          const a = base[i], b = base[(i + 1) % n], c = base[(i + n / 2) % n], e = base[(i + n / 2 + 1) % n];
+          rib += G.line(cam, [(a[0] + b[0]) / 2, H, (a[1] + b[1]) / 2], [(c[0] + e[0]) / 2, H, (c[1] + e[1]) / 2], 'sc-ribbon');
+        }
+        const t = cam.p([0, H, 0]), k = rb * scale * 0.28;
+        rib += '<ellipse class="sc-bow" cx="' + f1(t[0] - k * 0.8) + '" cy="' + f1(t[1] - k * 0.3) + '" rx="' + f1(k) + '" ry="' + f1(k * 0.5) + '" transform="rotate(-20 ' + f1(t[0]) + ' ' + f1(t[1]) + ')"/>' +
+          '<ellipse class="sc-bow" cx="' + f1(t[0] + k * 0.8) + '" cy="' + f1(t[1] - k * 0.3) + '" rx="' + f1(k) + '" ry="' + f1(k * 0.5) + '" transform="rotate(20 ' + f1(t[0]) + ' ' + f1(t[1]) + ')"/>';
+        out += rib;
+      }
+    } else if (kind === 'gas') {
+      // tanque branco deitado sobre dois apoios, com a palavra GÁS
+      [-H / 3, H / 3].forEach((x) => {
+        const sup = G.box(x - d.r * 0.18, 0, -d.r * 0.7, d.r * 0.36, d.r * 0.55, d.r * 1.4);
+        const r = G.render(sup, cam, { colors: { '*': '#5c6670' } });
+        out += r.faces + r.edges;
+      });
+      const r = G.render(full, cam, { colors: { '*': '#eef1f4' }, hidden: false });
+      out += r.faces + r.edges;
+      const v = G.box(-d.r * 0.15, 2 * d.r - 0.02, -d.r * 0.15, d.r * 0.3, d.r * 0.25, d.r * 0.3);
+      const rv = G.render(v, cam, { colors: { '*': '#c0392b' } });
+      out += rv.faces + rv.edges;
+      out += G.text(cam, [0, d.r, d.r * 1.02], 'GÁS', 'sc-gas');
+    }
+    return out;
+  }
+
   function labTxt(k, v, o, s) {
-    const hide = (o.ask === 'h' && k === 'h') || (o.ask === 'a' && (k === 'a' || k === 'r'));
+    const hide = o.ask !== 'V' && (k === o.ask || (o.ask === 'a' && k === 'r'));
     if (hide && s.ans < 0.5) return '<tspan class="unk">' + k + ' = ?</tspan>';
+    if (o.myst && !hide && !shown.has(k)) return '<tspan class="myst" data-k="' + k + '">' + k + ' = ?</tspan>';
     return (hide ? '<tspan class="found">' : '<tspan>') + k + ' = ' + F(v) + ' ' + o.unit + '</tspan>';
   }
 
@@ -428,6 +604,8 @@
     const top = (i) => T([base[i][0] + sh, H, base[i][1]]);
     const edgeBest = (cands) => cands.reduce((best, e) => (depth(G.lerp3(e[0], e[1], 0.5)) > depth(G.lerp3(best[0], best[1], 0.5)) ? e : best));
     const lab = (a, bb, t) => G.dimLabel(cam, a, bb, C, t, 'dim3');
+    // as outras arestas iguais à aresta a (cubo e base quadrada)
+    const plainA = () => (s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : o.myst && !shown.has('a') ? '<tspan class="myst" data-k="a">?</tspan>' : F(d.a) + ' ' + o.unit);
     if (b === 'circ') {
       const n = base.length;
       const pick = (fn) => { let bi = 0, bv = -Infinity; for (let i = 0; i < n; i++) { const v = fn(i); if (v > bv) { bv = v; bi = i; } } return bi; };
@@ -457,11 +635,11 @@
       const ez = edgeBest([[bot(1), bot(2)], [bot(0), bot(3)]]);
       if (o.solid === 'cubo') {
         out += lab(ex[0], ex[1], labTxt('a', d.a, o, s));
-        out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit);
-        out += lab(bot(vi), top(vi), s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit);
+        out += lab(ez[0], ez[1], plainA());
+        out += lab(bot(vi), top(vi), plainA());
         return out;
       }
-      if (b === 'sq') { out += lab(ex[0], ex[1], labTxt('a', d.a, o, s)); out += lab(ez[0], ez[1], s.ans < 0.5 && o.ask === 'a' ? '<tspan class="unk">a</tspan>' : F(d.a) + ' ' + o.unit); }
+      if (b === 'sq') { out += lab(ex[0], ex[1], labTxt('a', d.a, o, s)); out += lab(ez[0], ez[1], plainA()); }
       else { out += lab(ex[0], ex[1], labTxt('c', d.c, o, s)); out += lab(ez[0], ez[1], labTxt('L', d.L, o, s)); }
     } else if (b === 'tri') {
       out += lab(bot(0), bot(1), labTxt('b', d.b, o, s));
@@ -529,7 +707,7 @@
     const t1 = GE.seg(s.ia, 0, 1), t2 = GE.seg(s.ia, 1, 2);
     const txt = (x, y, t, cls, anc) => '<text x="' + G.f1(x) + '" y="' + G.f1(y) + '" class="' + (cls || 'ilab') + '" text-anchor="' + (anc || 'middle') + '" dominant-baseline="middle">' + t + '</text>';
     const vtxt = (x, y, t, left) => '<text transform="translate(' + G.f1(x) + ' ' + G.f1(y) + ') rotate(' + (left ? -90 : 90) + ')" class="ilab" text-anchor="middle" dominant-baseline="middle">' + t + '</text>';
-    const rev = o.ask === 'a';
+    const rev = o.ask === 'a' || o.ask === 'r';
     const unk = (k, v) => (rev && s.ans < 0.5 ? '<tspan class="unk">' + k + ' = ?</tspan>' : k + ' = ' + F(v) + ' ' + u);
     let foot = '';
     if (kind === 'sq' || kind === 'rect') {
@@ -675,9 +853,11 @@
       rg.value = o.d[k];
     });
     const seg = $('vol-ask');
-    seg.querySelector('[data-v="a"]').hidden = !['cubo', 'quad', 'cil'].includes(o.solid);
-    seg.querySelector('[data-v="a"]').textContent = o.solid === 'cil' ? 'Raio' : 'Aresta';
-    seg.querySelector('[data-v="h"]').hidden = o.solid === 'cubo';
+    const ASKN = { a: o.solid === 'cubo' ? 'Aresta' : 'Aresta da base', h: 'Altura', c: o.solid === 'tri' ? '2º cateto' : 'Comprimento', L: o.solid === 'hex' ? 'Lado' : 'Largura', b: '1º cateto', r: 'Raio' };
+    if (seg.dataset.k !== o.solid) {
+      seg.dataset.k = o.solid;
+      seg.innerHTML = '<button data-v="V">Volume</button>' + def.dims.map((k) => '<button data-v="' + k + '">' + ASKN[k] + '</button>').join('');
+    }
     seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === o.ask));
     $('vol-unit').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === o.unit));
     $('vol-cap').setAttribute('aria-pressed', o.cap);
@@ -689,6 +869,7 @@
     $('vol-name').textContent = def.name;
     document.querySelector('#view-vol [data-vflag="lab"]').setAttribute('aria-pressed', o.lab);
     document.querySelector('#view-vol [data-vflag="grid"]').setAttribute('aria-pressed', o.grid);
+    document.querySelector('#view-vol [data-vflag="myst"]').setAttribute('aria-pressed', o.myst);
     document.querySelector('#view-vol [data-vflag="hidden"]').setAttribute('aria-pressed', GE.state.hidden);
   }
 
@@ -709,7 +890,17 @@
     svgId: 'vol-svg',
     name() { const o = S(); const q = BOOK.find((b) => b.id === o.q); return 'Volume · ' + (q ? q.book : SOLIDS[o.solid].name); },
     init() {
-      view = G.viewer({ svg: $('vol-svg'), prefix: 'vol', cam0: { yaw: -32, pitch: 26 }, redraw: () => stp && stp.redraw() });
+      view = G.viewer({
+        svg: $('vol-svg'), prefix: 'vol', cam0: { yaw: -32, pitch: 26 }, redraw: () => stp && stp.redraw(),
+        // cena do livro na tela: não gira (só move e aproxima)
+        locked: () => !!(stp && stp.scene() && stp.scene().ctx > 0.5),
+        // tocar numa medida escondida (modo mistério) não gira a figura
+        skip: (e) => !!(e.target.closest && e.target.closest('[data-k]')),
+      });
+      $('vol-svg').addEventListener('click', (e) => {
+        const t = e.target.closest && e.target.closest('[data-k]');
+        if (t) { shown.add(t.dataset.k); stp.redraw(); }
+      });
       stp = GE.stepper({
         prefix: 'vol',
         steps,
@@ -753,10 +944,10 @@
         if (changed.includes('vol') && !opts.quiet) {
           const a = prev.vol || {}, b = S();
           const onlyStep = Object.keys(b).every((k) => k === 'step' || JSON.stringify(a[k]) === JSON.stringify(b[k]));
-          if (!onlyStep) { renderControls(); stp.rebuild(false); }
+          if (!onlyStep) { if (a.myst !== b.myst || a.solid !== b.solid || JSON.stringify(a.d) !== JSON.stringify(b.d)) shown.clear(); renderControls(); stp.rebuild(false); }
           else if (GE.state.view === 'vol') { stp.rebuild(true); }
         }
-        if (changed.some((k) => ['pi', 'dec', 'hidden'].includes(k))) { renderControls(); stp.rebuild(false); }
+        if (changed.some((k) => ['pi', 'dec', 'hidden', 'level'].includes(k))) { renderControls(); stp.rebuild(false); }
       });
       renderControls();
       stp.rebuild(false);

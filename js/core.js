@@ -15,6 +15,7 @@
     font: 1,
     speed: 1,
     hidden: true,       // arestas ocultas tracejadas
+    level: 'EF',        // 'EF' (9º ano) | 'EM' (mais formal, com passos extras)
   };
   const STORE_KEY = 'geometria-espacial:v1';
   const listeners = [];
@@ -58,6 +59,7 @@
     s.font = clamp(Number(s.font) || 1, 0.85, 1.6);
     s.speed = clamp(Number(s.speed) || 1, 0.25, 3);
     s.hidden = s.hidden !== false;
+    if (!['EF', 'EM'].includes(s.level)) s.level = 'EF';
     if (!['auto', 'light', 'dark'].includes(s.theme)) s.theme = 'light';
     Object.keys(GE.modules).forEach((v) => {
       const m = GE.modules[v];
@@ -122,6 +124,7 @@
     if (s[s.view]) parts.push('s=' + encodeURIComponent(JSON.stringify(s[s.view])));
     parts.push('pi=' + s.pi, 'n=' + s.dec);
     if (!s.hidden) parts.push('h=0');
+    if (s.level === 'EM') parts.push('lv=EM');
     return parts.join('~');
   };
   GE.decodeHash = function (hash) {
@@ -140,6 +143,7 @@
       else if (k === 'pi') out.pi = v;
       else if (k === 'n') out.dec = parseInt(v, 10);
       else if (k === 'h') out.hidden = v !== '0';
+      else if (k === 'lv') out.level = v;
     });
     if (sub && out.view && VIEWS.includes(out.view)) out[out.view] = sub;
     return Object.keys(out).length ? out : null;

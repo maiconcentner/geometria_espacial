@@ -69,6 +69,7 @@
           <button class="chip" data-vflag="lab">Medidas</button>
           <button class="chip" data-vflag="grid">Camadas</button>
           <button class="chip" data-vflag="hidden" title="Arestas escondidas atrás do sólido aparecem tracejadas">Arestas ocultas</button>
+          <button class="chip" data-vflag="myst" title="Modo mistério: as medidas aparecem como ? e são reveladas ao tocar">Mistério</button>
         </div>
         <svg class="stage" id="vol-svg" viewBox="0 0 1000 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Sólido geométrico e área da base"></svg>
         <p class="view-hint">Arraste para girar · botão direito ou Shift + arrastar para mover · roda do mouse (ou pinça) para aproximar</p>
@@ -107,7 +108,7 @@
         </div>
         <div class="field-inline">
           <span class="flabel">Descobrir</span>
-          <div class="seg seg-sm" id="vol-ask"><button data-v="V">Volume</button><button data-v="h">Altura</button><button data-v="a">Aresta</button></div>
+          <div class="seg seg-sm seg-wrap" id="vol-ask" role="group" aria-label="O que descobrir"></div>
         </div>
         <div class="chips">
           <button class="chip" id="vol-cap" title="Encher de água: volume e capacidade">Capacidade</button>
@@ -488,6 +489,11 @@
           <span class="flabel">Valor de π</span>
           <div class="seg seg-sm" id="seg-pi"><button data-v="3.14">3,14</button><button data-v="3">3</button><button data-v="pi">deixar π</button></div>
         </div>
+        <div class="field-inline">
+          <span class="flabel">Nível</span>
+          <div class="seg seg-sm" id="seg-level"><button data-v="EF">9º ano</button><button data-v="EM">Ensino médio</button></div>
+        </div>
+        <p class="note">No nível Ensino médio aparecem passos extras: a diagonal do paralelepípedo e o enunciado do Princípio de Cavalieri.</p>
         <div class="field-inline">
           <span class="flabel">Casas decimais</span>
           <div class="seg seg-sm" id="seg-dec"><button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button></div>
